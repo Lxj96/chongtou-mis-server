@@ -1,60 +1,60 @@
 {
-    "name": "lxj/ChongtouMis",
-    "version": "1.0.0",
-    "description": "Minimalist background management system based on ThinkPHP6 and (Vue or React)",
-    "type": "project",
-    "keywords": [
-        "shopAdmin",
-        "shopAdminWeb",
-        "php",
-        "vue",
-        "thinkphp",
-        "element"
-    ],
-    "homepage": "https://gitee.com/Lxj96/study-notes/tree/master/Server/shop_admin_server",
-    "license": "Apache-2.0",
-    "authors": [
-        {
-            "name": "lxj",
-            "email": "494393165@qq.com"
-        }
-    ],
-    "require": {
-        "php": ">=7.2.5",
-        "topthink/framework": "^6.0.0",
-        "topthink/think-orm": "^2.0",
-        "topthink/think-multi-app": "^1.0",
-        "firebase/php-jwt": "^5.2",
-        "overtrue/pinyin": "~4.0",
-        "hg/apidoc": "^3.0",
-        "overtrue/wechat": "~4.0",
-        "qiniu/php-sdk": "^7.4",
-        "aliyuncs/oss-sdk-php": "^2.4",
-        "qcloud/cos-sdk-v5": "^2.3",
-        "guzzlehttp/guzzle": "^6.0",
-        "psr/container": "1.1.1",
-        "phpmailer/phpmailer": "^6.5",
-        "overtrue/easy-sms": "^2.1",
-        "ext-json": "*"
-    },
-    "autoload": {
-        "psr-4": {
-            "app\\": "app"
-        },
-        "psr-0": {
-            "": "extend/"
-        }
-    },
-    "config": {
-        "preferred-install": "dist",
-        "allow-plugins": {
-            "easywechat-composer/easywechat-composer": true
-        }
-    },
-    "scripts": {
-        "post-autoload-dump": [
-            "@php think service:discover",
-            "@php think vendor:publish"
-        ]
+  "name": "lxj/ChongtouMis",
+  "version": "1.0.0",
+  "description": "Minimalist background management system based on ThinkPHP6 and (Vue or React)",
+  "type": "project",
+  "keywords": [
+    "shopAdmin",
+    "shopAdminWeb",
+    "php",
+    "vue",
+    "thinkphp",
+    "element"
+  ],
+  "homepage": "https://gitee.com/Lxj96/chongtou-mis-server",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "lxj",
+      "email": "494393165@qq.com"
     }
+  ],
+  "require": {
+    "php": ">=7.2.5",
+    "topthink/framework": "^6.0.0",
+    "topthink/think-orm": "^2.0",
+    "topthink/think-multi-app": "^1.0",
+    "firebase/php-jwt": "^5.2",
+    "overtrue/pinyin": "~4.0",
+    "hg/apidoc": "^3.0",
+    "overtrue/wechat": "~4.0",
+    "qiniu/php-sdk": "^7.4",
+    "aliyuncs/oss-sdk-php": "^2.4",
+    "qcloud/cos-sdk-v5": "^2.3",
+    "guzzlehttp/guzzle": "^6.0",
+    "psr/container": "1.1.1",
+    "phpmailer/phpmailer": "^6.5",
+    "overtrue/easy-sms": "^2.1",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "app\\": "app"
+    },
+    "psr-0": {
+      "": "extend/"
+    }
+  },
+  "config": {
+    "preferred-install": "dist",
+    "allow-plugins": {
+      "easywechat-composer/easywechat-composer": true
+    }
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "@php think service:discover",
+      "@php think vendor:publish"
+    ]
+  }
 }
