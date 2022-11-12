@@ -97,7 +97,6 @@ class ExceptionHandle extends Handle
         if ($e instanceof HttpException && $request->isAjax()) {
             return response($e->getMessage(), $e->getStatusCode(), [], 'json');
         }
-
         $debug = Config::get('app.app_debug');
         if ($debug) {
             // 其他错误交给系统处理

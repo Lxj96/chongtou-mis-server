@@ -39,10 +39,10 @@ class BaseModel extends Model
         $userData = session('userData');
         return isset($userData['user_name']) ? $userData['user_name'] . '-' . $userData['xm'] : null;
     }
-
+    */
     protected function filePrefixUrl($value)
     {
         $result = Request::instance()->domain() . '/' . $value;
         return $result;
-    }*/
+    }
 }

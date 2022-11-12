@@ -8,6 +8,7 @@
 
 namespace app\common\service\admin;
 
+use app\common\exception\SaveErrorMessage;
 use think\facade\Cache;
 use think\facade\Config;
 use app\common\cache\admin\UserCache;
@@ -49,22 +50,22 @@ class SettingService
             $cache_config = Cache::getConfig();
             $info['cache_type'] = $cache_config['default'];
 
-            $info['logo'] = '';
+            $info['logo_url'] = '';
             if ($info['logo_id']) {
-                $info['logo'] = FileService::fileUrl($info['logo_id']);
+                $info['logo_url'] = FileService::fileUrl($info['logo_id']);
             }
 
-            $info['favicon'] = '';
+            $info['favicon_url'] = '';
             if ($info['favicon_id']) {
-                $info['favicon'] = FileService::fileUrl($info['favicon_id']);
+                $info['favicon_url'] = FileService::fileUrl($info['favicon_id']);
             }
             else {
-                $info['favicon'] = $info['logo'];
+                $info['favicon_url'] = $info['logo_url'];
             }
 
-            $info['login_bg'] = '';
+            $info['login_bg_url'] = '';
             if ($info['login_bg_id']) {
-                $info['login_bg'] = FileService::fileUrl($info['login_bg_id']);
+                $info['login_bg_url'] = FileService::fileUrl($info['login_bg_id']);
             }
 
             SettingCache::set($id, $info);
@@ -78,7 +79,7 @@ class SettingService
      *
      * @param array $param 设置信息
      *
-     * @return bool|Exception
+     * @throws SaveErrorMessage
      */
     public static function edit($param)
     {
@@ -91,7 +92,7 @@ class SettingService
 
         $res = $model->where($pk, $id)->update($param);
         if (empty($res)) {
-            exception();
+            throw new SaveErrorMessage();
         }
 
         SettingCache::del($id);
@@ -110,7 +111,7 @@ class SettingService
         $UserPk = $UserModel->getPk();
 
         $user_cache = [];
-        $user = $UserModel->field($UserPk)->where('is_delete', 0)->select()->toArray();
+        $user = $UserModel->field($UserPk)->select()->toArray();
         foreach ($user as $v) {
             $user_old = UserCache::get($v[$UserPk]);
             if ($user_old) {
@@ -123,7 +124,7 @@ class SettingService
 
         $res = Cache::clear();
         if (empty($res)) {
-            exception();
+            throw new SaveErrorMessage();
         }
 
         foreach ($user_cache as $v) {

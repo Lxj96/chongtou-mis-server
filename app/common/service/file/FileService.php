@@ -8,10 +8,13 @@
 
 namespace app\common\service\file;
 
-use think\facade\Filesystem;
 use app\common\cache\file\FileCache;
+use app\common\exception\SaveErrorMessage;
+use app\common\exception\UploadErrorException;
 use app\common\model\file\FileModel;
 use app\common\model\file\GroupModel;
+use think\facade\Db;
+use think\facade\Filesystem;
 
 class FileService
 {
@@ -23,10 +26,11 @@ class FileService
      * @param int $pageSize 每页记录数
      * @param array $order 排序
      * @param string $field 字段
+     * @param boolean $onlyTrashed 是否只查询软删除的数据
      *
      * @return array
      */
-    public static function list($where = [], $current = 1, $pageSize = 10, $order = [], $field = '')
+    public static function list($where = [], $current = 1, $pageSize = 10, $order = [], $field = '', $onlyTrashed = false)
     {
         $model = new FileModel();
         $pk = $model->getPk();
@@ -45,17 +49,35 @@ class FileService
             $order = ['update_time' => 'desc', 'sort' => 'desc', $pk => 'desc'];
         }
 
-        $total = $model->where($where)->count($pk);
+        if ($onlyTrashed) {
+            $total = $model->onlyTrashed()->where($where)->count($pk);
 
-        $pages = ceil($total / $pageSize);
+            $pages = ceil($total / $pageSize);
 
-        $list = $model->field($field)->where($where)->page($current)->limit($pageSize)->order($order)->select()->toArray();
+            $list = $model->field($field)
+                ->append(['file_url'])
+                ->onlyTrashed()
+                ->where($where)
+                ->page($current)
+                ->limit($pageSize)
+                ->order($order)
+                ->select()
+                ->toArray();
+        }
+        else {
 
-        foreach ($list as $k => $v) {
-            $list[$k]['file_url'] = self::fileUrl($v);
-            if (isset($v['file_size'])) {
-                $list[$k]['file_size'] = SettingService::fileSize($v['file_size']);
-            }
+            $total = $model->where($where)->count($pk);
+
+            $pages = ceil($total / $pageSize);
+
+            $list = $model->field($field)
+                ->append(['file_url'])
+                ->where($where)
+                ->page($current)
+                ->limit($pageSize)
+                ->order($order)
+                ->select()
+                ->toArray();
         }
 
         $ids = array_column($list, $pk);
@@ -79,20 +101,12 @@ class FileService
         $info = FileCache::get($id);
         if (empty($info)) {
             $model = new FileModel();
-            $info = $model->find($id);
+            $info = $model->append(['file_url'])->find($id);
             if (empty($info)) {
                 return [];
             }
             else {
                 $info = $info->toArray();
-                if ($info['is_disable']) {
-                    $info['file_url'] = '';
-                }
-                else {
-                    $info['file_url'] = self::fileUrl($info);
-                }
-                $info['file_size'] = SettingService::fileSize($info['file_size']);
-
                 FileCache::set($id, $info);
             }
         }
@@ -146,7 +160,6 @@ class FileService
             $file_update['storage'] = $param['storage'];
             $file_update['domain'] = $param['domain'];
             $file_update['is_disable'] = 0;
-            $file_update['is_delete'] = 0;
             self::edit($file_update);
             $id = $file_exist[$pk];
         }
@@ -155,7 +168,7 @@ class FileService
             $param['update_time'] = $datetime;
             $id = $model->strict(false)->insertGetId($param);
             if (empty($id)) {
-                exception();
+                throw new UploadErrorException();
             }
         }
 
@@ -183,7 +196,7 @@ class FileService
 
         $res = $model->where($pk, $id)->update($param);
         if (empty($res)) {
-            exception();
+            throw new UploadErrorException();
         }
 
         FileCache::del($id);
@@ -199,19 +212,18 @@ class FileService
      * @param array $ids 文件id
      * @param int $is_delete 是否删除
      *
-     * @return array|Exception
+     * @throws SaveErrorMessage
      */
-    public static function dele($ids, $is_delete = 1)
+    public static function del($ids, $is_delete = 1)
     {
         $model = new FileModel();
         $pk = $model->getPk();
 
-        $update['is_delete'] = $is_delete;
         $update['delete_time'] = datetime();
 
         $res = $model->where($pk, 'in', $ids)->update($update);
         if (empty($res)) {
-            exception();
+            throw new SaveErrorMessage();
         }
 
         foreach ($ids as $v) {
@@ -229,7 +241,7 @@ class FileService
      * @param array $ids 文件id
      * @param int $group_id 分组id
      *
-     * @return array|Exception
+     * @throws SaveErrorMessage
      */
     public static function editgroup($ids, $group_id = 0)
     {
@@ -241,7 +253,7 @@ class FileService
 
         $res = $model->where($pk, 'in', $ids)->update($update);
         if (empty($res)) {
-            exception();
+            throw new SaveErrorMessage();
         }
 
         foreach ($ids as $v) {
@@ -259,7 +271,7 @@ class FileService
      * @param array $ids 文件id
      * @param string $file_type 文件类型
      *
-     * @return array|Exception
+     * @throws SaveErrorMessage
      */
     public static function edittype($ids, $file_type = 'image')
     {
@@ -271,7 +283,7 @@ class FileService
 
         $res = $model->where($pk, 'in', $ids)->update($update);
         if (empty($res)) {
-            exception();
+            throw new SaveErrorMessage();
         }
 
         foreach ($ids as $v) {
@@ -289,7 +301,6 @@ class FileService
      * @param array $ids 文件id
      * @param string $domain 文件域名
      *
-     * @return array|Exception
      */
     public static function editdomain($ids, $domain = '')
     {
@@ -301,7 +312,7 @@ class FileService
 
         $res = $model->where($pk, 'in', $ids)->update($update);
         if (empty($res)) {
-            exception();
+            throw new SaveErrorMessage();
         }
 
         foreach ($ids as $v) {
@@ -319,7 +330,6 @@ class FileService
      * @param array $ids 文件id
      * @param int $is_disable 是否禁用
      *
-     * @return array|Exception
      */
     public static function disable($ids, $is_disable = 0)
     {
@@ -331,7 +341,7 @@ class FileService
 
         $res = $model->where($pk, 'in', $ids)->update($update);
         if (empty($res)) {
-            exception();
+            throw new SaveErrorMessage();
         }
 
         foreach ($ids as $v) {
@@ -348,20 +358,19 @@ class FileService
      * 文件回收站恢复
      *
      * @param array $ids 文件id
-     *
-     * @return array|Exception
+     * @throws SaveErrorMessage
      */
     public static function recoverReco($ids)
     {
         $model = new FileModel();
         $pk = $model->getPk();
 
-        $update['is_delete'] = 0;
+        $update['delete_time'] = null;
         $update['update_time'] = datetime();
 
-        $res = $model->where($pk, 'in', $ids)->update($update);
+        $res = $model->onlyTrashed()->where($pk, 'in', $ids)->update($update);
         if (empty($res)) {
-            exception();
+            throw new SaveErrorMessage();
         }
 
         foreach ($ids as $v) {
@@ -377,19 +386,19 @@ class FileService
      * 文件回收站删除
      *
      * @param array $ids 文件id
-     *
-     * @return array|Exception
+     * @throws SaveErrorMessage
      */
     public static function recoverDele($ids)
     {
         $model = new FileModel();
         $pk = $model->getPk();
 
-        $file = $model->field($pk . ',file_path')->where($pk, 'in', $ids)->select();
+        $file = $model->field($pk . ',file_path')->onlyTrashed()->where($pk, 'in', $ids)->select();
 
-        $res = $model->where($pk, 'in', $ids)->delete();
+        $res = Db::name('file')->where($pk, 'in', $ids)->delete();
+
         if (empty($res)) {
-            exception();
+            throw new SaveErrorMessage();
         }
 
         $del = [];
@@ -474,7 +483,7 @@ class FileService
 
             $file_types = SettingService::fileType();
             $file_field = 'file_type,count(file_type) as count';
-            $file_count = $model->field($file_field)->where('is_delete', 0)->group('file_type')->select()->toArray();
+            $file_count = $model->field($file_field)->group('file_type')->select()->toArray();
             foreach ($file_types as $k => $v) {
                 $temp = [];
                 $temp['name'] = $v;
@@ -486,7 +495,7 @@ class FileService
                 }
                 $data['data'][] = $temp;
             }
-            $data['count'] = $model->where('is_delete', 0)->count($pk);
+            $data['count'] = $model->count($pk);
 
             FileCache::set($key, $data);
         }

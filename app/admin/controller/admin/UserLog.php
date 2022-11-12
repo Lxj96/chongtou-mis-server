@@ -21,11 +21,6 @@ class UserLog
     /**
      * 用户日志列表
      * @return Json
-     * @throws \app\common\exception\AuthException
-     * @throws \app\common\exception\MissException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -34,47 +29,46 @@ class UserLog
         $pageSize = input('pageSize/d', 10);
         $order = input('sort/a', [], 'format_sort');
         // 检索字段
-        $log_type = input('log_type/d', 0);
-        $username = input('username/s', '');
-        $nickname = input('nickname/s', '');
-        $admin_user_id = input('admin_user_id/s', '');
-        $menu_url = input('menu_url/s', '');
-        $menu_name = input('menu_name/s', '');
-        $admin_menu_id = input('admin_menu_id/s', '');
-        $request_ip = input('request_ip/s', '');
-        $request_region = input('request_region/s', '');
-        $request_isp = input('request_isp/s', '');
-        $create_time_start = input('create_time_start/s', '');
-        $create_time_end = input('create_time_end/s', '');
+        $search_field = input('search_field/s', '');
+        $search_words = input('search_words/s', '');
+        $date_field = input('date_field/s', '');
+        $date_value = input('date_value/a', []);
+        $log_type = input('log_type/d', '');
 
         // 构建查询条件
         $where = [];
-        if ($log_type) $where[] = ['log_type', '=', $log_type];
-        // 用户相关查询条件
-        if (!empty($username)) $user_where[] = ['username', 'like', '%' . $username . '%'];
-        if (!empty($nickname)) $user_where[] = ['nickname', 'like', '%' . $nickname . '%'];
-        $UserModel = new UserModel();
-        $UserPk = $UserModel->getPk();
-        if (!empty($user_where)) {
-            $admin_user_ids = $UserModel->where($user_where)->column($UserPk);
-            $where[] = [$UserPk, 'in', $admin_user_ids];
+        if ($log_type) {
+            $where[] = ['log_type', '=', $log_type];
         }
-        if (!empty($admin_user_id)) $where[] = [$UserPk, 'in', $admin_user_id];
-        // 菜单相关查询条件
-        if (!empty($menu_url)) $menu_where[] = ['menu_url', 'like', '%' . $menu_url . '%'];
-        if (!empty($menu_name)) $menu_where[] = ['menu_name', 'like', '%' . $menu_name . '%'];
-        $MenuModel = new MenuModel();
-        $MenuPk = $MenuModel->getPk();
-        if (!empty($menu_where)) {
-            $admin_menu_ids = $MenuModel->where($menu_where)->column($MenuPk);
-            $where[] = [$MenuPk, 'in', $admin_menu_ids];
+        if ($search_field && $search_words) {
+            if (in_array($search_field, ['admin_user_log_id', 'admin_user_id', 'admin_menu_id'])) {
+                $search_exp = strpos($search_words, ',') ? 'in' : '=';
+                $where[] = [$search_field, $search_exp, $search_words];
+            }
+            elseif (in_array($search_field, ['username'])) {
+                $UserModel = new UserModel();
+                $UserPk = $UserModel->getPk();
+                $user_exp = strpos($search_words, ',') ? 'in' : '=';
+                $user_where[] = [$search_field, $user_exp, $search_words];
+                $admin_user_ids = $UserModel->where($user_where)->column($UserPk);
+                $where[] = [$UserPk, 'in', $admin_user_ids];
+            }
+            elseif (in_array($search_field, ['menu_url', 'menu_name'])) {
+                $MenuModel = new MenuModel();
+                $MenuPk = $MenuModel->getPk();
+                $menu_exp = strpos($search_words, ',') ? 'in' : '=';
+                $menu_where[] = [$search_field, $menu_exp, $search_words];
+                $admin_menu_ids = $MenuModel->where($menu_where)->column($MenuPk);
+                $where[] = [$MenuPk, 'in', $admin_menu_ids];
+            }
+            else {
+                $where[] = [$search_field, 'like', '%' . $search_words . '%'];
+            }
         }
-        if (!empty($admin_menu_id)) $where[] = [$MenuPk, 'in', $admin_menu_id];
-        if (!empty($request_ip)) $where[] = ['request_ip', 'like', '%' . $request_ip . '%'];
-        if (!empty($request_region)) $where[] = ['request_region', 'like', '%' . $request_region . '%'];
-        if (!empty($request_isp)) $where[] = ['request_isp', 'like', '%' . $request_isp . '%'];
-        if (!empty($create_time_start) && !empty($create_time_end)) $where[] = ['create_time', 'between time', [$create_time_start, DatetimeUtils::dateEndTime($create_time_end)]];
-
+        if ($date_field && $date_value) {
+            $where[] = [$date_field, '>=', $date_value[0] . ' 00:00:00'];
+            $where[] = [$date_field, '<=', $date_value[1] . ' 23:59:59'];
+        }
         $data = UserLogService::list($where, $current, $pageSize, $order);
 
         return success($data);
@@ -82,17 +76,12 @@ class UserLog
 
     /**
      * 用户日志信息
-     * @param $id
      * @return Json
      * @throws MissException
-     * @throws \app\common\exception\AuthException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function read($id)
+    public function read()
     {
-        $param['admin_user_log_id'] = $id;
+        $param['admin_user_log_id'] = input('get.admin_user_log_id/d', 0);
 
         validate(UserLogValidate::class)->scene('info')->check($param);
 
@@ -107,7 +96,6 @@ class UserLog
     /**
      * 用户日志删除
      * @return Json
-     * @throws \app\common\exception\SaveErrorMessage
      */
     public function delete()
     {
@@ -123,7 +111,6 @@ class UserLog
     /**
      * 用户日志清除
      * @return Json
-     * @throws \think\db\exception\DbException
      */
     public function clear()
     {

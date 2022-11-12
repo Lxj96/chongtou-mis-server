@@ -27,4 +27,5 @@ return [
         ],
         // 更多的磁盘配置信息
     ],
+    'file_prefix'=>env('file.file_prefix', ''),
 ];

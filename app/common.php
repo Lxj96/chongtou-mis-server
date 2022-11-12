@@ -69,7 +69,7 @@ function format_sort($order)
 {
     $arr = json_decode($order, true);
     foreach ($arr as $key => $val) {
-        $arr[$key] = $val === 'ascend' ? 'asc' : 'desc';
+        $arr[$key] = $val === 'ascending' ? 'asc' : 'desc';
     }
 
     return $arr;
@@ -104,13 +104,14 @@ function file_url($file_path = '')
         return $file_path;
     }
 
-    $server_url = server_url();
+//    $server_url = server_url();
+    $file_url_prefix = config('filesystem.file_prefix');
 
     if (stripos($file_path, '/') === 0) {
-        $res = $server_url . $file_path;
+        $res = $file_url_prefix . $file_path;
     }
     else {
-        $res = $server_url . '/' . $file_path;
+        $res = $file_url_prefix . '/' . $file_path;
     }
 
     return $res;

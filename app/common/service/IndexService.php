@@ -39,11 +39,11 @@ class IndexService
         $data = Cache::get($key);
         if (empty($data)) {
             $data = [];
-            $table = ['member' => '会员', 'cms_content' => '内容', 'file' => '文件', 'api' => '接口', 'region' => '地区'];
+            $table = ['file' => '文件', 'region' => '地区'];
             foreach ($table as $k => $v) {
                 $temp = [];
                 $temp['name'] = $v;
-                $temp['count'] = Db::name($k)->where('is_delete', 0)->count();
+                $temp['count'] = Db::name($k)->whereNull('delete_time')->count();
                 $data[] = $temp;
             }
             Cache::set($key, $data, 60);

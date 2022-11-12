@@ -13,16 +13,10 @@ use app\common\validate\admin\SettingValidate;
 use app\common\service\admin\SettingService;
 use hg\apidoc\annotation as Apidoc;
 
-/**
- * @Apidoc\Title("系统设置")
- * @Apidoc\Group("adminSystem")
- * @Apidoc\Sort("750")
- */
 class Setting
 {
     /**
-     * @Apidoc\Title("缓存设置信息")
-     * @Apidoc\Returned("cache_type", type="string", default="", desc="缓存类型")
+     * 缓存设置信息
      */
     public function cacheInfo()
     {
@@ -34,8 +28,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("缓存设置清除")
-     * @Apidoc\Method("POST")
+     * 缓存设置清除
      */
     public function cacheClear()
     {
@@ -45,8 +38,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("Token设置信息")
-     * @Apidoc\Returned(ref="app\common\model\admin\SettingModel\tokenInfoParam")
+     * Token设置信息
      */
     public function tokenInfo()
     {
@@ -59,9 +51,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("Token设置修改")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param(ref="app\common\model\admin\SettingModel\tokenInfoParam")
+     * Token设置修改
      */
     public function tokenEdit()
     {
@@ -76,8 +66,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("验证码设置信息")
-     * @Apidoc\Returned(ref="app\common\model\admin\SettingModel\captchaInfoParam")
+     * 验证码设置信息
      */
     public function captchaInfo()
     {
@@ -90,9 +79,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("验证码设置修改")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param(ref="app\common\model\admin\SettingModel\captchaInfoParam")
+     * 验证码设置修改
      */
     public function captchaEdit()
     {
@@ -107,8 +94,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("日志设置信息")
-     * @Apidoc\Returned(ref="app\common\model\admin\SettingModel\logInfoParam")
+     * 日志设置信息
      */
     public function logInfo()
     {
@@ -121,9 +107,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("日志设置修改")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param(ref="app\common\model\admin\SettingModel\logInfoParam")
+     * 日志设置修改
      */
     public function logEdit()
     {
@@ -138,8 +122,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("接口设置信息")
-     * @Apidoc\Returned(ref="app\common\model\admin\SettingModel\apiInfoParam")
+     * 接口设置信息
      */
     public function apiInfo()
     {
@@ -152,9 +135,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("接口设置修改")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param(ref="app\common\model\admin\SettingModel\apiInfoParam")
+     * 接口设置修改
      */
     public function apiEdit()
     {
@@ -169,8 +150,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("系统设置信息")
-     * @Apidoc\Returned(ref="app\common\model\admin\SettingModel\systemInfoParam")
+     * 系统设置信息
      */
     public function systemInfo()
     {
@@ -185,9 +165,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("系统设置修改")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param(ref="app\common\model\admin\SettingModel\systemInfoParam")
+     * 系统设置修改
      */
     public function systemEdit()
     {
@@ -203,8 +181,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("邮件设置信息")
-     * @Apidoc\Returned(ref="app\common\model\admin\SettingModel\emailInfoParam")
+     * 邮件设置信息
      */
     public function emailInfo()
     {
@@ -219,9 +196,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("邮件设置修改")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param(ref="app\common\model\admin\SettingModel\emailInfoParam")
+     * 邮件设置修改
      */
     public function emailEdit()
     {
@@ -241,9 +216,7 @@ class Setting
     }
 
     /**
-     * @Apidoc\Title("邮件设置测试")
-     * @Apidoc\Method("POST")
-     * @Apidoc\Param(ref="app\common\model\admin\SettingModel\emailTestParam")
+     * 邮件设置测试
      */
     public function emailTest()
     {

@@ -32,7 +32,6 @@ class AllowCrossDomain
         if ($request->isOptions()) {
             return Response::create();
         }
-
         return $next($request);
     }
 }

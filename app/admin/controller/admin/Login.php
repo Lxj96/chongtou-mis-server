@@ -30,9 +30,9 @@ class Login
         $data['system_name'] = $setting['system_name'];
         $data['title'] = $setting['system_name'];
         $data['page_title'] = $setting['page_title'];
-        $data['logo'] = $setting['logo'];
-        $data['favicon'] = $setting['favicon'];
-        $data['login_bg'] = $setting['login_bg'];
+        $data['logo_url'] = $setting['logo_url'];
+        $data['favicon_url'] = $setting['favicon_url'];
+        $data['login_bg_url'] = $setting['login_bg_url'];
 
         if ($setting['captcha_switch']) {
             $captcha = CaptchaUtils::create($setting['captcha_type']);
@@ -65,10 +65,6 @@ class Login
      * 登录
      * @return Json
      * @throws ParameterException
-     * @throws \app\common\exception\AuthException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function login()
     {
@@ -101,10 +97,6 @@ class Login
      *
      *
      * @return json
-     * @throws \app\common\exception\AuthException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function refresh()
     {

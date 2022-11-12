@@ -8,9 +8,9 @@
 
 namespace app\common\validate\admin;
 
-use think\Validate;
 use app\common\model\admin\UserModel;
 use app\common\service\admin\UserService;
+use think\Validate;
 
 class UserValidate extends Validate
 {

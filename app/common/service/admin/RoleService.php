@@ -27,9 +27,6 @@ class RoleService
      * @param string $field 字段
      *
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function list($where = [], $current = 1, $pageSize = 10, $order = [], $field = '')
     {
@@ -228,9 +225,6 @@ class RoleService
      * @param string $field 字段
      *
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function user($where = [], $current = 1, $pageSize = 10, $order = [], $field = '')
     {
@@ -244,10 +238,6 @@ class RoleService
      *
      * @return array
      * @throws SaveErrorMessage
-     * @throws \app\common\exception\AuthException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function userRemove($param)
     {

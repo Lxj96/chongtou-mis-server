@@ -21,9 +21,6 @@ class User
      * 用户列表
      *
      * @return Json
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -32,22 +29,35 @@ class User
         $pageSize = input('pageSize/d', 10);
         $order = input('sort/a', [], 'format_sort');
         // 检索字段
-        $username = input('username/s', '');
-        $nickname = input('nickname/s', '');
-        $email = input('email/s', '');
-        $login_time_start = input('login_time_start/s', '');
-        $login_time_end = input('login_time_end/s', '');
-        $create_time_start = input('create_time_start/s', '');
-        $create_time_end = input('create_time_end/s', '');
+        $is_super = input('is_super/b');
+        $is_disable = input('is_disable/b');
+        $search_field = input('search_field/s', '');
+        $search_words = input('search_words/s', '');
+        $date_field = input('date_field/s', '');
+        $date_value = input('date_value/a', []);
 
         // 构建查询条件
         $where = [];
-        if (!empty($username)) $where[] = ['username', 'like', '%' . $username . '%'];
-        if (!empty($nickname)) $where[] = ['nickname', 'like', '%' . $nickname . '%'];
-        if (!empty($email)) $where[] = ['email', 'like', '%' . $email . '%'];
-        if (!empty($login_time_start) && !empty($login_time_end)) $where[] = ['login_time', 'between time', [$login_time_start, DatetimeUtils::dateEndTime($login_time_end)]];
-        if (!empty($create_time_start) && !empty($create_time_end)) $where[] = ['create_time', 'between time', [$create_time_start, DatetimeUtils::dateEndTime($create_time_end)]];
+        if ($search_field && $search_words) {
+            if (in_array($search_field, ['admin_user_id'])) {
+                $search_exp = strpos($search_words, ',') ? 'in' : '=';
+                $where[] = [$search_field, $search_exp, $search_words];
+            }
+            else {
+                $where[] = [$search_field, 'like', '%' . $search_words . '%'];
+            }
+        }
+        if (is_bool($is_super)) {
+            $where[] = ['is_super', '=', $is_super];
+        }
+        if (is_bool($is_disable)) {
+            $where[] = ['is_disable', '=', $is_disable];
+        }
 
+        if ($date_field && !empty($date_value)) {
+            $where[] = [$date_field, '>=', $date_value[0] . ' 00:00:00'];
+            $where[] = [$date_field, '<=', $date_value[1] . ' 23:59:59'];
+        }
         $data = UserService::list($where, $current, $pageSize, $order);
 
         return success($data);
@@ -55,17 +65,12 @@ class User
 
     /**
      * 用户信息
-     * @param integer $id
      * @return Json
      * @throws MissException
-     * @throws \app\common\exception\AuthException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function read($id)
+    public function read()
     {
-        $param['admin_user_id'] = $id;
+        $param['admin_user_id'] = input('get.admin_user_id/d', 0);
 
         validate(UserValidate::class)->scene('info')->check($param);
 
@@ -80,7 +85,6 @@ class User
     /**
      * 用户添加
      * @return Json
-     * @throws \app\common\exception\SaveErrorMessage
      */
     public function save()
     {
@@ -102,17 +106,11 @@ class User
 
     /**
      * 用户修改
-     * @param integer $id
      * @return Json
-     * @throws \app\common\exception\AuthException
-     * @throws \app\common\exception\SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function update($id)
+    public function update()
     {
-        $param['admin_user_id'] = $id;
+        $param['admin_user_id'] = input('admin_user_id/d', 0);
         $param['avatar_id'] = input('avatar_id/d', 0);
         $param['username'] = input('username/s', '');
         $param['nickname'] = input('nickname/s', '');
@@ -131,7 +129,6 @@ class User
     /**
      * 用户删除
      * @return Json
-     * @throws \app\common\exception\SaveErrorMessage
      */
     public function delete()
     {
@@ -147,11 +144,6 @@ class User
     /**
      * 用户 分配|获取 权限
      * @return Json
-     * @throws \app\common\exception\AuthException
-     * @throws \app\common\exception\SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function rule()
     {
@@ -175,8 +167,6 @@ class User
     /**
      * 用户重置密码
      * @return Json
-     * @throws \app\common\exception\AuthException
-     * @throws \app\common\exception\SaveErrorMessage
      */
     public function pwd()
     {
@@ -193,8 +183,6 @@ class User
     /**
      * 用户是否超管
      * @return Json
-     * @throws \app\common\exception\AuthException
-     * @throws \app\common\exception\SaveErrorMessage
      */
     public function super()
     {
@@ -211,8 +199,6 @@ class User
     /**
      * 用户是否禁用
      * @return Json
-     * @throws \app\common\exception\AuthException
-     * @throws \app\common\exception\SaveErrorMessage
      */
     public function disable()
     {

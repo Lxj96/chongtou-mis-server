@@ -10,9 +10,11 @@ namespace app\admin\controller\admin;
 
 use app\common\exception\MissException;
 use app\common\service\admin\MenuService;
+use app\common\service\admin\UserService;
 use app\common\validate\admin\MenuValidate;
 use app\common\validate\admin\RoleValidate;
 use app\common\validate\admin\UserValidate;
+use think\facade\Db;
 use think\response\Json;
 
 class Menu
@@ -20,30 +22,18 @@ class Menu
     /**
      * 菜单列表
      * @return Json
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
-        $menu_name = input('menu_name/s', '');
-        $menu_url = input('menu_url/s', '');
-        $admin_menu_id = input('admin_menu_id/d', '');
-        $menu_pid = input('menu_pid/d', '');
+        $menu_pid = input('menu_pid/s', '');
+        $admin_menu_id = input('admin_menu_id/s', '');
+        $search_words = input('search_words/s', '');
 
         // 构建查询条件
         $where = [];
-        if (!empty($menu_name)) $where[] = ['menu_name', 'like', '%' . $menu_name . '%'];
-        if (!empty($menu_url)) $where[] = ['menu_url', 'like', '%' . $menu_url . '%'];
-        if (!empty($admin_menu_id)) {
-            $search_exp = strpos($admin_menu_id, ',') ? 'in' : '=';
-            $where[] = ['admin_menu_id', $search_exp, $admin_menu_id];
-        }
-        if (!empty($menu_pid)) {
-            $search_exp = strpos($menu_pid, ',') ? 'in' : '=';
-            $where[] = ['menu_pid', $search_exp, $menu_pid];
-        }
-
+        if (!empty($search_words)) $where[] = ['menu_name|menu_url', 'like', '%' . $search_words . '%'];
+        if (!empty($admin_menu_id)) $where[] = ['', 'exp', Db::raw("FIND_IN_SET(admin_menu_id,'" . $admin_menu_id . "')")];
+        if (!empty($menu_pid)) $where[] = ['', 'exp', Db::raw("FIND_IN_SET(menu_pid,'" . $menu_pid . "')")];
         $data['list'] = MenuService::list('tree', $where);
 
         return success($data);
@@ -54,14 +44,10 @@ class Menu
      * @param integer $id
      * @return Json
      * @throws MissException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function read($id)
+    public function read()
     {
-        $param['admin_menu_id'] = $id;
-
+        $param['admin_menu_id'] = input('get.admin_menu_id/d', 0);
         validate(MenuValidate::class)->scene('info')->check($param);
 
         $data = MenuService::info($param['admin_menu_id']);
@@ -98,17 +84,12 @@ class Menu
 
     /**
      * 菜单修改
-     * @param integer $id
      * @return Json
      * @throws MissException
-     * @throws \app\common\exception\SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function update($id)
+    public function update()
     {
-        $param['admin_menu_id'] = $id;
+        $param['admin_menu_id'] = input('admin_menu_id/d', 0);
         $param['menu_pid'] = input('menu_pid/d', 0);
         $param['menu_name'] = input('menu_name/s', '');
         $param['menu_url'] = input('menu_url/s', '');
@@ -136,10 +117,6 @@ class Menu
      *
      * @return Json
      * @throws MissException
-     * @throws \app\common\exception\SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function delete()
     {
@@ -156,10 +133,6 @@ class Menu
      * 菜单修改上级
      * @return Json
      * @throws MissException
-     * @throws \app\common\exception\SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function pid()
     {
@@ -177,10 +150,6 @@ class Menu
      * 菜单是否无需登录
      * @return Json
      * @throws MissException
-     * @throws \app\common\exception\SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\db\exception\DbException
      */
     public function unlogin()
     {
@@ -198,10 +167,6 @@ class Menu
      * 菜单是否无需权限
      * @return Json
      * @throws MissException
-     * @throws \app\common\exception\SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function unauth()
     {
@@ -219,10 +184,6 @@ class Menu
      * 菜单是否禁用
      * @return Json
      * @throws MissException
-     * @throws \app\common\exception\SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function disable()
     {
@@ -240,9 +201,6 @@ class Menu
      * 菜单角色
      *
      * @return Json
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function role()
     {
@@ -283,9 +241,6 @@ class Menu
     /**
      * 菜单用户
      * @return Json
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function user()
     {
@@ -294,25 +249,33 @@ class Menu
         $pageSize = input('pageSize/d', 10);
         $order = input('sort/a', [], 'format_sort');
         // 检索字段
+        $admin_role_id = input('admin_role_id/d', '');
         $admin_menu_id = input('admin_menu_id/d', '');
 
-        validate(MenuValidate::class)->scene('user')->check(['admin_menu_id' => $admin_menu_id]);
+        if ($admin_menu_id) {
+            validate(MenuValidate::class)->scene('user')->check(['admin_menu_id' => $admin_menu_id]);
 
-        $where[] = ['admin_menu_ids', 'like', '%' . str_join($admin_menu_id) . '%'];
+            $where[] = ['admin_menu_ids', 'like', '%' . str_join($admin_menu_id) . '%'];
 
-        $data = MenuService::user($where, $current, $pageSize, $order);
+            $data = UserService::list($where, $current, $pageSize, $order);
 
-        return success($data);
+            return success($data);
+        }
+        else {
+            validate(RoleValidate::class)->scene('id')->check(['admin_role_id' => $admin_role_id]);
+
+            $where[] = ['admin_role_ids', 'like', '%' . str_join($admin_role_id) . '%'];
+
+            $data = MenuService::user($where, $current, $pageSize, $order);
+
+            return success($data);
+        }
+
     }
 
     /**
      * 菜单用户解除
      * @return Json
-     * @throws \app\common\exception\AuthException
-     * @throws \app\common\exception\SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function userRemove()
     {

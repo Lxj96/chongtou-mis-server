@@ -10,6 +10,7 @@ use think\facade\Route;
 
 // admin/admin/Login/login
 // 登录
+/*
 Route::group('admin/Login', function () {
     Route::get('setting', 'setting');
     Route::post('login', 'login');
@@ -87,4 +88,4 @@ Route::group('file', function () {
         Route::get('/', 'file.Setting/read');
         Route::put('/', 'file.Setting/update');
     });
-});
+});*/

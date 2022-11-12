@@ -31,11 +31,6 @@ class UserLogService
      * @param string $field 字段
      *
      * @return array
-     * @throws \app\common\exception\AuthException
-     * @throws \app\common\exception\MissException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function list($where = [], $current = 1, $pageSize = 10, $order = [], $field = '')
     {
@@ -93,10 +88,6 @@ class UserLogService
      *
      * @return array
      * @throws MissException
-     * @throws \app\common\exception\AuthException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function info($id)
     {
@@ -246,7 +237,6 @@ class UserLogService
      * @param bool $clean 清空所有
      *
      * @return array
-     * @throws \think\db\exception\DbException
      */
     public static function clear($where = [], $clean = false)
     {

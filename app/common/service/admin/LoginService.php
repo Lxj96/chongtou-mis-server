@@ -16,11 +16,6 @@ class LoginService
      * @param array $param 登录信息
      *
      * @return array
-     * @throws \app\common\exception\AuthException
-     * @throws \app\common\exception\ParameterException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function login($param)
     {

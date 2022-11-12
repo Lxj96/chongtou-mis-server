@@ -13,6 +13,7 @@ use app\common\service\admin\MenuService;
 use app\common\service\admin\RoleService;
 use app\common\validate\admin\RoleValidate;
 use app\common\validate\admin\UserValidate;
+use think\facade\Db;
 use think\response\Json;
 
 class Role
@@ -20,9 +21,6 @@ class Role
     /**
      * 菜单列表
      * @return Json
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function menu()
     {
@@ -35,9 +33,6 @@ class Role
      * 角色列表
      *
      * @return Json
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function index()
     {
@@ -46,13 +41,23 @@ class Role
         $pageSize = input('pageSize/d', 10);
         $order = input('sort/a', [], 'format_sort');
         // 检索字段
-        $role_name = input('role_name/s', '');
-        $role_desc = input('role_desc/s', '');
-
+        $admin_role_id = input('admin_role_id/s', '');
+        $is_disable = input('is_disable/b');
+        $search_words = input('search_words/s', '');
+        $date_field = input('date_field/s', '');
+        $date_value = input('date_value/a', []);
         // 构建查询条件
         $where = [];
-        if (!empty($role_name)) $where[] = ['role_name', 'like', '%' . $role_name . '%'];
-        if (!empty($role_desc)) $where[] = ['role_desc', 'like', '%' . $role_desc . '%'];
+        if (!empty($admin_role_id)) $where[] = ['', 'exp', Db::raw("FIND_IN_SET(admin_role_id,'" . $admin_role_id . "')")];
+        if (!empty($search_words)) $where[] = ['role_name|role_desc', 'like', '%' . $search_words . '%'];
+        if (is_bool($is_disable)) {
+            $where[] = ['is_disable', '=', $is_disable];
+        }
+
+        if ($date_field && !empty($date_value)) {
+            $where[] = [$date_field, '>=', $date_value[0] . ' 00:00:00'];
+            $where[] = [$date_field, '<=', $date_value[1] . ' 23:59:59'];
+        }
 
         $data = RoleService::list($where, $current, $pageSize, $order);
 
@@ -61,14 +66,12 @@ class Role
 
     /**
      * 角色信息
-     * @param $id
      * @return Json
      * @throws MissException
      */
-    public function read($id)
+    public function read()
     {
-        $param['admin_role_id'] = $id;
-
+        $param['admin_role_id'] = input('get.admin_role_id/d', 0);
         validate(RoleValidate::class)->scene('info')->check($param);
 
         $data = RoleService::info($param['admin_role_id']);
@@ -82,7 +85,6 @@ class Role
     /**
      * 角色添加
      * @return Json
-     * @throws \app\common\exception\SaveErrorMessage
      */
     public function save()
     {
@@ -100,13 +102,11 @@ class Role
 
     /**
      * 角色修改
-     * @param $id
      * @return Json
-     * @throws \app\common\exception\SaveErrorMessage
      */
-    public function update($id)
+    public function update()
     {
-        $param['admin_role_id'] = $id;
+        $param['admin_role_id'] = input('admin_role_id/d', 0);
         $param['admin_menu_ids'] = input('admin_menu_ids/a', '');
         $param['role_name'] = input('role_name/s', '');
         $param['role_desc'] = input('role_desc/s', '');
@@ -122,7 +122,6 @@ class Role
     /**
      * 角色删除
      * @return Json
-     * @throws \app\common\exception\SaveErrorMessage
      */
     public function delete()
     {
@@ -138,7 +137,6 @@ class Role
     /**
      * 角色是否禁用
      * @return Json
-     * @throws \app\common\exception\SaveErrorMessage
      */
     public function disable()
     {
@@ -155,9 +153,6 @@ class Role
     /**
      * 角色用户
      * @return Json
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function user()
     {
@@ -180,11 +175,6 @@ class Role
     /**
      * 角色用户解除
      * @return Json
-     * @throws \app\common\exception\AuthException
-     * @throws \app\common\exception\SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public function userRemove()
     {

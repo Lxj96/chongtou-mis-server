@@ -37,10 +37,6 @@ class UserCenterService
      *
      * @return array
      * @throws SaveErrorMessage
-     * @throws \app\common\exception\AuthException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function edit($param)
     {
@@ -69,10 +65,6 @@ class UserCenterService
      *
      * @return array
      * @throws SaveErrorMessage
-     * @throws \app\common\exception\AuthException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function pwd($param)
     {

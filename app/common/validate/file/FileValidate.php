@@ -36,7 +36,7 @@ class FileValidate extends Validate
         'info' => ['file_id'],
         'add' => ['file'],
         'edit' => ['file_id'],
-        'dele' => ['ids'],
+        'del' => ['ids'],
         'disable' => ['ids'],
         'editgroup' => ['ids'],
         'edittype' => ['ids', 'file_type'],

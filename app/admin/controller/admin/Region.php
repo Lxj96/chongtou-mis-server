@@ -6,18 +6,12 @@
  * DateTime: 2021-08-17 10:55
  */
 
-namespace app\admin\controller\setting;
+namespace app\admin\controller\admin;
 
 use think\facade\Request;
 use app\common\service\setting\RegionService;
 use app\common\validate\setting\RegionValidate;
-use hg\apidoc\annotation as Apidoc;
 
-/**
- * @Apidoc\Title("地区管理")
- * @Apidoc\Group("adminSetting")
- * @Apidoc\Sort("530")
- */
 class Region
 {
     /**

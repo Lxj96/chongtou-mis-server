@@ -31,7 +31,6 @@ class Setting
      * 文件设置修改
      *
      * @return Json
-     * @throws \app\common\exception\MissException
      */
     public function update()
     {

@@ -16,15 +16,10 @@ use app\common\service\file\FileService;
 use app\common\service\admin\NoticeService;
 use hg\apidoc\annotation as Apidoc;
 
-/**
- * @Apidoc\Title("控制台")
- * @Apidoc\Group("adminConsole")
- * @Apidoc\Sort("150")
- */
 class Index
 {
     /**
-     * @Apidoc\Title("首页")
+     * 首页
      */
     public function index()
     {
@@ -37,7 +32,7 @@ class Index
     }
 
     /**
-     * @Apidoc\Title("总数统计")
+     * 总数统计
      */
     public function count()
     {
@@ -45,60 +40,14 @@ class Index
 
         return success($data);
     }
+    
 
     /**
-     * @Apidoc\Title("会员统计")
-     */
-    public function member()
-    {
-        $date = Request::param('date/a', []);
-
-        $data = MemberService::statDate($date);
-
-        return success($data);
-    }
-
-    /**
-     * @Apidoc\Title("内容统计")
-     */
-    public function cms()
-    {
-        $data = ContentService::statistics();
-
-        return success($data);
-    }
-
-    /**
-     * @Apidoc\Title("文件统计")
+     * 文件统计
      */
     public function file()
     {
         $data = FileService::statistics();
-
-        return success($data);
-    }
-
-    /**
-     * @Apidoc\Title("公告")
-     * @Apidoc\Param(ref="pagingParam")
-     * @Apidoc\Returned(ref="pagingReturn")
-     * @Apidoc\Returned("list", type="array", desc="公告列表",
-     *     @Apidoc\Returned(ref="app\common\model\admin\NoticeModel\listReturn")
-     * )
-     */
-    public function notice()
-    {
-        $page = Request::param('page/d', 1);
-        $limit = Request::param('limit/d', 10);
-
-        $where[] = ['open_time_start', '<=', datetime()];
-        $where[] = ['open_time_end', '>=', datetime()];
-        $where[] = ['is_open', '=', 1];
-        $where[] = ['is_delete', '=', 0];
-
-        $order = ['sort' => 'desc', 'open_time_start' => 'desc'];
-
-        $data = NoticeService::list($where, $page, $limit, $order);
 
         return success($data);
     }

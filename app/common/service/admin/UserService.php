@@ -31,9 +31,6 @@ class UserService
      * @param string $field 字段
      *
      * @return array
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function list($where = [], $current = 1, $pageSize = 10, $order = [], $field = '')
     {
@@ -76,9 +73,6 @@ class UserService
      *
      * @return array
      * @throws AuthException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function info($id, $exce = true)
     {
@@ -230,9 +224,6 @@ class UserService
      * @return array
      * @throws AuthException
      * @throws SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function edit($param)
     {
@@ -294,9 +285,6 @@ class UserService
      * @return array
      * @throws AuthException
      * @throws SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function rule($param, $method = 'get')
     {
@@ -449,9 +437,6 @@ class UserService
      * @return array
      * @throws AuthException
      * @throws SaveErrorMessage
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function disable($ids, $is_disable)
     {
@@ -483,9 +468,6 @@ class UserService
      * @return array
      * @throws AuthException
      * @throws ParameterException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function login($param)
     {
@@ -500,7 +482,7 @@ class UserService
             throw new ParameterException('账号或密码错误');
         }
         $user = $user->toArray();
-        if ($user['is_disable'] == 1) {
+        if ($user['is_disable']) {
             throw new AuthException('账号已被禁用，请联系管理员');
         }
 
@@ -557,9 +539,6 @@ class UserService
      * @param int $id 用户id
      * @return array
      * @throws AuthException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
      */
     public static function refresh($id)
     {
