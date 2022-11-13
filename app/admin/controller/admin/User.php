@@ -9,10 +9,9 @@
 namespace app\admin\controller\admin;
 
 use app\common\exception\MissException;
-use app\common\utils\DatetimeUtils;
-use think\facade\Request;
-use app\common\validate\admin\UserValidate;
 use app\common\service\admin\UserService;
+use app\common\validate\admin\UserValidate;
+use think\facade\Request;
 use think\response\Json;
 
 class User

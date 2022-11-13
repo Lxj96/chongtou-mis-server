@@ -459,11 +459,7 @@ class FileService
         $field = $pk . ',storage,domain,file_type,file_name,file_hash,file_ext,file_path,file_size,is_disable';
         $where[] = [$pk, 'in', $ids];
         $where[] = ['is_disable', '=', 0];
-        $file = $model->field($field)->where($where)->select()->toArray();
-        foreach ($file as $k => $v) {
-            $file[$k]['file_url'] = self::fileUrl($v);
-            $file[$k]['file_size'] = SettingService::fileSize($v['file_size']);
-        }
+        $file = $model->field($field)->append(['file_url'])->where($where)->select()->toArray();
 
         return $file;
     }

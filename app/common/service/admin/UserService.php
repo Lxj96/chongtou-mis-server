@@ -51,16 +51,16 @@ class UserService
 
         $list = $model->field($field)->where($where)->page($current)->limit($pageSize)->order($order)->select()->toArray();
 
-        foreach ($list as $k => $v) {
-            $list[$k]['avatar_url'] = '';
-            if (!empty($v['avatar_id'])) {
-                $img = FileService::fileUrl($v['img_ids']);
-                if ($img) {
-                    $list[$k]['avatar_url'] = $img;
-                }
-            }
-            unset($list[$k]['avatar_id']);
-        }
+//        foreach ($list as $k => $v) {
+//            $list[$k]['avatar_url'] = '';
+//            if (!empty($v['avatar_id'])) {
+//                $img = FileService::fileUrl($v['img_ids']);
+//                if ($img) {
+//                    $list[$k]['avatar_url'] = $img;
+//                }
+//            }
+//            unset($list[$k]['avatar_id']);
+//        }
 
         return compact('total', 'pages', 'current', 'pageSize', 'list');
     }
