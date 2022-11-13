@@ -101,7 +101,7 @@ class FileService
         $info = FileCache::get($id);
         if (empty($info)) {
             $model = new FileModel();
-            $info = $model->append(['file_url'])->find($id);
+            $info = $model->field('*')->append(['file_url'])->find($id);
             if (empty($info)) {
                 return [];
             }

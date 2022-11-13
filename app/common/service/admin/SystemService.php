@@ -12,10 +12,8 @@ namespace app\common\service\admin;
 use app\common\cache\admin\SystemCache;
 use app\common\exception\MissException;
 use app\common\exception\SaveErrorMessage;
-use app\common\model\admin\SystemFileModel;
 use app\common\model\admin\SystemModel;
 use app\common\service\file\FileService;
-use think\facade\Db;
 
 class SystemService
 {

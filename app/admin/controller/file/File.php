@@ -132,13 +132,13 @@ class File
      */
     public function update()
     {
-        $param['file_id'] = Request::param('file_id/d', '');
-        $param['group_id'] = Request::param('group_id/d', 0);
-        $param['domain'] = Request::param('domain/s', '');
-        $param['file_type'] = Request::param('file_type/s', 'image');
-        $param['file_name'] = Request::param('file_name/s', '');
-        $param['is_front'] = Request::param('is_front/s', 0);
-        $param['sort'] = Request::param('sort/d', 250);
+        $param['file_id'] = input('file_id/d', '');
+        $param['group_id'] = input('group_id/d', 0);
+        $param['domain'] = input('domain/s', '');
+        $param['file_type'] = input('file_type/s', 'image');
+        $param['file_name'] = input('file_name/s', '');
+        $param['is_front'] = input('is_front/s', 0);
+        $param['sort'] = input('sort/d', 250);
 
         validate(FileValidate::class)->scene('edit')->check($param);
 
@@ -152,7 +152,7 @@ class File
      */
     public function delete()
     {
-        $param['ids'] = Request::param('ids/a', '');
+        $param['ids'] = input('ids/a', '');
 
         validate(FileValidate::class)->scene('del')->check($param);
 
@@ -166,8 +166,8 @@ class File
      */
     public function editgroup()
     {
-        $param['ids'] = Request::param('ids/a', '');
-        $param['group_id'] = Request::param('group_id/d', 0);
+        $param['ids'] = input('ids/a', '');
+        $param['group_id'] = input('group_id/d', 0);
 
         validate(FileValidate::class)->scene('editgroup')->check($param);
 
@@ -181,8 +181,8 @@ class File
      */
     public function edittype()
     {
-        $param['ids'] = Request::param('ids/a', '');
-        $param['file_type'] = Request::param('file_type/s', 'image');
+        $param['ids'] = input('ids/a', '');
+        $param['file_type'] = input('file_type/s', 'image');
 
         validate(FileValidate::class)->scene('edittype')->check($param);
 
@@ -199,8 +199,8 @@ class File
      */
     public function editdomain()
     {
-        $param['ids'] = Request::param('ids/a', '');
-        $param['domain'] = Request::param('domain/s', 'image');
+        $param['ids'] = input('ids/a', '');
+        $param['domain'] = input('domain/s', 'image');
 
         validate(FileValidate::class)->scene('editdomain')->check($param);
 
@@ -214,8 +214,8 @@ class File
      */
     public function disable()
     {
-        $param['ids'] = Request::param('ids/a', '');
-        $param['is_disable'] = Request::param('is_disable/d', false);
+        $param['ids'] = input('ids/a', '');
+        $param['is_disable'] = input('is_disable/d', false);
 
         validate(FileValidate::class)->scene('disable')->check($param);
 
@@ -269,7 +269,7 @@ class File
      */
     public function recoverReco()
     {
-        $param['ids'] = Request::param('ids/a', '');
+        $param['ids'] = input('ids/a', '');
 
         validate(FileValidate::class)->scene('reco')->check($param);
 
@@ -283,7 +283,7 @@ class File
      */
     public function recoverDele()
     {
-        $param['ids'] = Request::param('ids/a', '');
+        $param['ids'] = input('ids/a', '');
 
         validate(FileValidate::class)->scene('del')->check($param);
 
