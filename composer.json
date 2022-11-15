@@ -4,8 +4,8 @@
   "description": "Minimalist background management system based on ThinkPHP6 and (Vue or React)",
   "type": "project",
   "keywords": [
-    "shopAdmin",
-    "shopAdminWeb",
+    "chongtouMis",
+    "chongtouMisAdmin",
     "php",
     "vue",
     "thinkphp",
@@ -16,7 +16,7 @@
   "authors": [
     {
       "name": "lxj",
-      "email": "494393165@qq.com"
+      "email": "xing@lxj96.top"
     }
   ],
   "require": {
