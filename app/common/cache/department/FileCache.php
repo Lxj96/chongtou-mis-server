@@ -1,12 +1,12 @@
 <?php
 /**
- * Description: 行政村文档缓存
+ * Description: 科室文档缓存
  * File: FileCache.php
  * User: Lxj
  * DateTime: 2022-11-13 23:42
  */
 
-namespace app\common\cache\village;
+namespace app\common\cache\department;
 
 
 use think\facade\Cache;
@@ -22,7 +22,7 @@ class FileCache
      */
     public static function key($file_id)
     {
-        return 'village_file:' . $file_id;
+        return 'department_file:' . $file_id;
     }
 
     /**

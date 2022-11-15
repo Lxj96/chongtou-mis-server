@@ -1,21 +1,20 @@
 <?php
 /**
- * Description:
- * File: SystemService.php
+ * Description: 科室信息
+ * File: IndexService.php
  * User: Lxj
- * DateTime: 2022-11-13 09:59
+ * DateTime: 2022-11-15 11:17
  */
 
-namespace app\common\service\village;
+namespace app\common\service\department;
 
 
-use app\common\cache\village\SystemCache;
+use app\common\cache\department\DepartmentCache;
 use app\common\exception\MissException;
 use app\common\exception\SaveErrorMessage;
-use app\common\model\village\VillageSystemModel;
-use app\common\service\file\FileService;
+use app\common\model\department\DepartmentModel;
 
-class SystemService
+class DepartmentService
 {
     /**
      * 列表
@@ -30,14 +29,14 @@ class SystemService
      */
     public static function list($where = [], $current = 1, $pageSize = 10, $order = [], $field = '')
     {
-        $model = new VillageSystemModel();
+        $model = new DepartmentModel();
 
         if (empty($field)) {
-            $field = 'id,village_name,content,sort,create_time,update_time';
+            $field = 'id,name,content,sort,remark,create_time,update_time';
         }
 
         if (empty($order)) {
-            $order = ['sort' => 'desc', 'id' => 'desc'];
+            $order = ['name' => 'asc', 'id' => 'desc'];
         }
 
         $total = $model->where($where)->count();
@@ -50,17 +49,17 @@ class SystemService
     }
 
     /**
-     * 行政村缓存列表
+     * 科室缓存列表
      */
     public static function listCache()
     {
-        $list = SystemCache::get('all');
+        $list = DepartmentCache::get('all');
         if (empty($list)) {
-            $model = new VillageSystemModel();
+            $model = new DepartmentModel();
 
-            $list = $model->field('id,village_name')->order(['sort' => 'asc', 'id' => 'desc'])->select()->toArray();
+            $list = $model->field('id,name as department_name')->order(['sort' => 'asc', 'id' => 'desc'])->select()->toArray();
 
-            SystemCache::set('all', $list);
+            DepartmentCache::set('all', $list);
         }
 
         return $list;
@@ -73,23 +72,21 @@ class SystemService
      * @param bool $exce 不存在是否抛出异常
      *
      * @return array
+     * @throws MissException
      */
     public static function info($id, $exce = true)
     {
-        $info = SystemCache::get($id);
+        $info = DepartmentCache::get($id);
         if (empty($info)) {
-            $model = new VillageSystemModel();
+            $model = new DepartmentModel();
             $info = $model->find($id);
             if (empty($info) && $exce) {
                 throw new MissException();
             }
             $info = $info->toArray();
 
-            $info['imgs'] = FileService::fileArray($info['img_ids']);
-
-            SystemCache::set($id, $info);
+            DepartmentCache::set($id, $info);
         }
-
         return $info;
     }
 
@@ -103,19 +100,18 @@ class SystemService
      */
     public static function add($param)
     {
-        $model = new VillageSystemModel();
+        $model = new DepartmentModel();
 
         $param['create_time'] = datetime();
-        $param['img_ids'] = file_ids($param['imgs']);
-        unset($param['imgs']);
 
         $id = $model->insertGetId($param);
         if (empty($id)) {
             throw new SaveErrorMessage();
         }
-        SystemCache::del('all');
+        DepartmentCache::del('all');
 
         $param['id'] = $id;
+
         return $param;
     }
 
@@ -129,23 +125,20 @@ class SystemService
      */
     public static function edit($param)
     {
-        $model = new VillageSystemModel();
+        $model = new DepartmentModel();
 
         $id = $param['id'];
         unset($param['id']);
 
         $param['update_time'] = datetime();
-        $param['img_ids'] = file_ids($param['imgs']);
-        unset($param['imgs']);
 
         $res = $model->where('id', $id)->update($param);
         if (empty($res)) {
             throw new SaveErrorMessage();
         }
 
-        SystemCache::del($id);
-        SystemCache::del('all');
-
+        DepartmentCache::del($id);
+        DepartmentCache::del('all');
         $param['id'] = $id;
 
         return $param;
@@ -161,7 +154,7 @@ class SystemService
      */
     public static function del($ids)
     {
-        $model = new VillageSystemModel();
+        $model = new DepartmentModel();
 
         $update['delete_time'] = datetime();
 
@@ -171,9 +164,9 @@ class SystemService
         }
 
         foreach ($ids as $v) {
-            SystemCache::del($v);
+            DepartmentCache::del($v);
         }
-        SystemCache::del('all');
+        DepartmentCache::del('all');
         $update['ids'] = $ids;
 
         return $update;

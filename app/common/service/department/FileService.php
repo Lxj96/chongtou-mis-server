@@ -1,21 +1,20 @@
 <?php
 /**
- * Description: 行政村文档
+ * Description: 科室文档
  * File: FileService.php
  * User: Lxj
- * DateTime: 2022-11-13 20:55
+ * DateTime: 2022-11-15 13:08
  */
 
-namespace app\common\service\village;
+namespace app\common\service\department;
 
 
-use app\common\cache\village\FileCache;
-use app\common\cache\village\FileGroupCache;
-use app\common\exception\MissException;
+use app\common\cache\department\FileCache;
+use app\common\cache\department\FileGroupCache;
 use app\common\exception\SaveErrorMessage;
 use app\common\exception\UploadErrorException;
-use app\common\model\village\FileGroupModel;
-use app\common\model\village\FileModel;
+use app\common\model\department\FileGroupModel;
+use app\common\model\department\FileModel;
 use app\common\service\file\SettingService;
 use app\common\service\file\StorageService;
 use think\facade\Filesystem;
@@ -138,7 +137,7 @@ class FileService
         $file_md5 = $file->hash('md5');
         $file_hash = $file->hash('sha1');
         $file_name = Filesystem::disk('public')
-            ->putFile('village_file', $file, function () use ($file_hash) {
+            ->putFile('department_file', $file, function () use ($file_hash) {
                 return $file_hash;
             });
 
