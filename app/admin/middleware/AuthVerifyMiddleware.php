@@ -33,7 +33,7 @@ class AuthVerifyMiddleware
     public function handle($request, Closure $next)
     {
         $menu_url = menu_url();
-        
+
         // 菜单是否存在
         if (!menu_is_exist($menu_url)) {
             $msg = '接口地址错误';
@@ -56,11 +56,11 @@ class AuthVerifyMiddleware
                 $user = UserCache::get($admin_user_id);
                 /*if (empty($user)) {
                     throw new AuthException('登录已失效，请重新登录');
-                }
+                }*/
 
                 if ($user['is_disable'] == 1) {
                     throw new AuthException('账号已禁用，请联系管理员');
-                }*/
+                }
 
                 if (!in_array($menu_url, $user['roles'])) {
                     $menu = MenuService::info($menu_url);

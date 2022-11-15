@@ -81,17 +81,17 @@ class TokenService
             throw new AuthException('登录已失效，请重新登录');
         }
         else {
-            if ($token != $user['admin_token']) {
+            if ($user['is_disable']) {
+                throw new AuthException('账号已被禁用,请联系管理员');
+            }
+            /*if ($token != $user['admin_token']) {
                 throw new AuthException('账号已在另一处登录');
             }
             else {
-                if ($user['is_disable'] == 1) {
+                if ($user['is_disable']) {
                     throw new AuthException('账号已被禁用,请联系管理员');
                 }
-                /*if ($user['delete_time'] !== null) {
-                    throw new AuthException('账号已被删除,请联系管理员');
-                }*/
-            }
+            }*/
         }
     }
 

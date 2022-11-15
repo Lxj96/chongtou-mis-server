@@ -20,8 +20,17 @@ use app\common\service\admin\TokenService;
  */
 function menu_url()
 {
-    return app('http')->getName() . '/' . Request::controller() . '/' . Request::action();
-    return app('http')->getName() . '/' . Request::pathinfo();
+    $url = app('http')->getName() . '/' . Request::pathinfo();
+    // 删除最后一个/
+    $reg = '/\/$/i';
+    $url = preg_replace($reg, '', $url);
+    // 自动补index
+    if (substr_count($url, '/') == 1) {
+        $url = $url . '/index';
+    }
+
+//    return app('http')->getName() . '/' . Request::controller() . '/' . Request::action();
+    return $url;
 }
 
 /**
