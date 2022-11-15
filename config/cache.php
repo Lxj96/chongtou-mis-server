@@ -28,7 +28,7 @@ return [
             // 序列化机制 例如 ['serialize', 'unserialize']
             'serialize'  => [],
             // 缓存前缀
-            'prefix'     => Env::get('cache.prefix', 'chongtou'),
+            'prefix'     => Env::get('cache.prefix', 'chongtoumis'),
             // 缓存保存目录
             'path'       => '',
             // 缓存标签前缀
@@ -42,7 +42,7 @@ return [
             // 序列化机制 例如 ['serialize', 'unserialize']
             'serialize'  => [],
             // 缓存前缀
-            'prefix'     => Env::get('cache.prefix', 'chongtou:'),
+            'prefix'     => Env::get('cache.prefix', 'chongtoumis:'),
             // 主机
             'host'       => Env::get('cache.host', '127.0.0.1'),
             // 端口
@@ -58,7 +58,7 @@ return [
             // 序列化机制 例如 ['serialize', 'unserialize']
             'serialize'  => [],
             // 缓存前缀
-            'prefix'     => Env::get('cache.prefix', 'chongtou:'),
+            'prefix'     => Env::get('cache.prefix', 'chongtoumis:'),
             // 主机
             'host'       => Env::get('cache.host', '127.0.0.1'),
             // 端口
@@ -74,7 +74,7 @@ return [
             // 序列化机制 例如 ['serialize', 'unserialize']
             'serialize'  => [],
             // 缓存前缀
-            'prefix'     => Env::get('cache.prefix', 'chongtou'),
+            'prefix'     => Env::get('cache.prefix', 'chongtoumis'),
             // 缓存标签前缀
             'tag_prefix' => 'tag:',
         ],

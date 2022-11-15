@@ -27,7 +27,7 @@ return [
     // 是否启用事件
     'with_event'       => true,
     // 默认应用
-    'default_app'      => 'api',
+    'default_app'      => 'admin',
     // 默认时区
     'default_timezone' => env('app.default_timezone', 'Asia/Shanghai'),
 

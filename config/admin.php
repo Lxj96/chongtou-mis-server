@@ -18,8 +18,6 @@ return [
     // 无需权限菜单url
     'menu_is_unauth' => [
         'admin/Index/index',
-        'admin/Index/notice',
-        'admin/admin.Notice/info',
         'admin/admin.Login/logout',
         'admin/admin.UserCenter/info'
     ],
