@@ -38,7 +38,7 @@ class User
         // 构建查询条件
         $where = [];
         if ($search_field && $search_words) {
-            if (in_array($search_field, ['admin_user_id'])) {
+            if (in_array($search_field, ['user_id'])) {
                 $search_exp = strpos($search_words, ',') ? 'in' : '=';
                 $where[] = [$search_field, $search_exp, $search_words];
             }
@@ -69,11 +69,11 @@ class User
      */
     public function read()
     {
-        $param['admin_user_id'] = input('get.admin_user_id/d', 0);
+        $param['user_id'] = input('get.user_id/d', 0);
 
         validate(UserValidate::class)->scene('info')->check($param);
 
-        $data = UserService::info($param['admin_user_id']);
+        $data = UserService::info($param['user_id']);
         if (empty($data)) {
             throw new MissException();
         }
@@ -109,7 +109,7 @@ class User
      */
     public function update()
     {
-        $param['admin_user_id'] = input('admin_user_id/d', 0);
+        $param['user_id'] = input('user_id/d', 0);
         $param['avatar_id'] = input('avatar_id/d', 0);
         $param['username'] = input('username/s', '');
         $param['nickname'] = input('nickname/s', '');
@@ -146,7 +146,7 @@ class User
      */
     public function rule()
     {
-        $param['admin_user_id'] = input('admin_user_id/d', '');
+        $param['user_id'] = input('user_id/d', '');
 
         validate(UserValidate::class)->scene('rule')->check($param);
 
@@ -154,8 +154,8 @@ class User
             $data = UserService::rule($param);
         }
         else {
-            $param['admin_role_ids'] = input('admin_role_ids/a', '');
-            $param['admin_menu_ids'] = input('admin_menu_ids/a', '');
+            $param['role_ids'] = input('role_ids/a', '');
+            $param['menu_ids'] = input('user_menu_ids/a', '');
 
             $data = UserService::rule($param, Request::method());
         }

@@ -7,12 +7,14 @@
  */
 
 return [
+    // 日志清除
+    \app\admin\middleware\LogClear::class,
     // 日志记录中间件
     \app\admin\middleware\UserLogMiddleware::class,
-    // Token验证中间件 已改为路由中间件
+    // Token验证中间件
     \app\admin\middleware\TokenVerifyMiddleware::class,
-    // 权限验证中间件 已改为路由中间件
+    // 权限验证中间件
     \app\admin\middleware\AuthVerifyMiddleware::class,
-    // 接口速率中间件 已改为路由中间件
+    // 接口速率中间件
     \app\admin\middleware\ApiRateMiddleware::class,
 ];

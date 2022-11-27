@@ -26,13 +26,13 @@ class Menu
     public function index()
     {
         $menu_pid = input('menu_pid/s', '');
-        $admin_menu_id = input('admin_menu_id/s', '');
+        $menu_id = input('menu_id/s', '');
         $search_words = input('search_words/s', '');
 
         // 构建查询条件
         $where = [];
         if (!empty($search_words)) $where[] = ['menu_name|menu_url', 'like', '%' . $search_words . '%'];
-        if (!empty($admin_menu_id)) $where[] = ['', 'exp', Db::raw("FIND_IN_SET(admin_menu_id,'" . $admin_menu_id . "')")];
+        if (!empty($menu_id)) $where[] = ['', 'exp', Db::raw("FIND_IN_SET(menu_id,'" . $menu_id . "')")];
         if (!empty($menu_pid)) $where[] = ['', 'exp', Db::raw("FIND_IN_SET(menu_pid,'" . $menu_pid . "')")];
         $data['list'] = MenuService::list('tree', $where);
 
@@ -47,12 +47,12 @@ class Menu
      */
     public function read()
     {
-        $param['admin_menu_id'] = input('get.admin_menu_id/d', 0);
+        $param['menu_id'] = input('get.menu_id/d', 0);
         validate(MenuValidate::class)->scene('info')->check($param);
 
-        $data = MenuService::info($param['admin_menu_id']);
+        $data = MenuService::info($param['menu_id']);
         if (empty($data)) {
-            throw new MissException('菜单已被删除：' . $param['admin_menu_id']);
+            throw new MissException('菜单已被删除：' . $param['menu_id']);
         }
 
         return success($data);
@@ -89,7 +89,7 @@ class Menu
      */
     public function update()
     {
-        $param['admin_menu_id'] = input('admin_menu_id/d', 0);
+        $param['menu_id'] = input('menu_id/d', 0);
         $param['menu_pid'] = input('menu_pid/d', 0);
         $param['menu_name'] = input('menu_name/s', '');
         $param['menu_url'] = input('menu_url/s', '');
@@ -198,6 +198,23 @@ class Menu
     }
 
     /**
+     * 菜单是否无需日志记录
+     * @return Json
+     * @throws MissException
+     */
+    public function unlog()
+    {
+        $param['ids'] = input('ids/a', []);
+        $param['is_unlog'] = input('is_unlog/b', false);
+
+        validate(MenuValidate::class)->scene('unlog')->check($param);
+
+        $data = MenuService::unlog($param['ids'], $param['is_unlog']);
+
+        return success($data);
+    }
+
+    /**
      * 菜单角色
      *
      * @return Json
@@ -209,11 +226,11 @@ class Menu
         $pageSize = input('pageSize/d', 10);
         $order = input('sort/a', [], 'format_sort');
         // 检索字段
-        $admin_menu_id = input('admin_menu_id/d', '');
+        $menu_id = input('menu_id/d', '');
 
-        validate(MenuValidate::class)->scene('role')->check(['admin_menu_id' => $admin_menu_id]);
+        validate(MenuValidate::class)->scene('role')->check(['menu_id' => $menu_id]);
 
-        $where[] = ['admin_menu_ids', 'like', '%' . str_join($admin_menu_id) . '%'];
+        $where[] = ['menu_ids', 'like', '%' . str_join($menu_id) . '%'];
 
         $data = MenuService::role($where, $current, $pageSize, $order);
 
@@ -227,8 +244,8 @@ class Menu
      */
     public function roleRemove()
     {
-        $param['admin_menu_id'] = input('admin_menu_id/d', '');
-        $param['admin_role_id'] = input('admin_role_id/d', '');
+        $param['menu_id'] = input('menu_id/d', '');
+        $param['role_id'] = input('role_id/d', '');
 
         validate(MenuValidate::class)->scene('id')->check($param);
         validate(RoleValidate::class)->scene('id')->check($param);
@@ -249,22 +266,22 @@ class Menu
         $pageSize = input('pageSize/d', 10);
         $order = input('sort/a', [], 'format_sort');
         // 检索字段
-        $admin_role_id = input('admin_role_id/d', '');
-        $admin_menu_id = input('admin_menu_id/d', '');
+        $role_id = input('role_id/d', '');
+        $menu_id = input('menu_id/d', '');
 
-        if ($admin_menu_id) {
-            validate(MenuValidate::class)->scene('user')->check(['admin_menu_id' => $admin_menu_id]);
+        if ($menu_id) {
+            validate(MenuValidate::class)->scene('user')->check(['menu_id' => $menu_id]);
 
-            $where[] = ['admin_menu_ids', 'like', '%' . str_join($admin_menu_id) . '%'];
+            $where[] = ['menu_ids', 'like', '%' . str_join($menu_id) . '%'];
 
             $data = UserService::list($where, $current, $pageSize, $order);
 
             return success($data);
         }
         else {
-            validate(RoleValidate::class)->scene('id')->check(['admin_role_id' => $admin_role_id]);
+            validate(RoleValidate::class)->scene('id')->check(['role_id' => $role_id]);
 
-            $where[] = ['admin_role_ids', 'like', '%' . str_join($admin_role_id) . '%'];
+            $where[] = ['role_ids', 'like', '%' . str_join($role_id) . '%'];
 
             $data = MenuService::user($where, $current, $pageSize, $order);
 
@@ -279,8 +296,8 @@ class Menu
      */
     public function userRemove()
     {
-        $param['admin_menu_id'] = input('admin_menu_id/d', '');
-        $param['admin_user_id'] = input('admin_user_id/d', '');
+        $param['menu_id'] = input('menu_id/d', '');
+        $param['user_id'] = input('user_id/d', '');
 
         validate(MenuValidate::class)->scene('id')->check($param);
         validate(UserValidate::class)->scene('id')->check($param);

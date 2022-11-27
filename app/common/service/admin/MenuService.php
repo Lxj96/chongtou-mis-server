@@ -37,7 +37,7 @@ class MenuService
             $model = new MenuModel();
             $pk = $model->getPk();
 
-            $field = $pk . ',menu_pid,menu_name,menu_url,menu_sort,is_unauth,is_unlogin,is_disable';
+            $field = $pk . ',menu_pid,menu_name,menu_url,menu_sort,is_unauth,is_unlogin,is_disable,is_unlog';
 
             $order = ['menu_sort' => 'asc', $pk => 'desc'];
 
@@ -50,7 +50,7 @@ class MenuService
                 $model = new MenuModel();
                 $pk = $model->getPk();
 
-                $field = $pk . ',menu_pid,menu_name,menu_url,menu_sort,is_unauth,is_unlogin,is_disable';
+                $field = $pk . ',menu_pid,menu_name,menu_url,menu_sort,is_unauth,is_unlogin,is_disable,is_unlog';
 
                 $order = ['menu_sort' => 'desc', $pk => 'asc'];
 
@@ -108,7 +108,7 @@ class MenuService
 
             //对pid 获取当前id所有层级关系
             $list = self::list();
-            $info['menu_pid_all'] = getCascaderAllByID($info['menu_pid'], $list, 'admin_menu_id', 'menu_pid');
+            $info['menu_pid_all'] = getCascaderAllByID($info['menu_pid'], $list, $pk, 'menu_pid');
             MenuCache::set($id, $info);
         }
 
@@ -496,6 +496,44 @@ class MenuService
     }
 
     /**
+     * 菜单是否无需日志记录
+     *
+     * @param array $ids 菜单id
+     * @param int $is_unlog 是否无需日志记录
+     *
+     * @return array
+     * @throws MissException
+     * @throws SaveErrorMessage
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public static function unlog($ids, $is_unlog)
+    {
+        $model = new MenuModel();
+        $pk = $model->getPk();
+
+        $update['is_unlog'] = $is_unlog;
+        $update['update_time'] = datetime();
+
+        $res = $model->where($pk, 'in', $ids)->update($update);
+        if (empty($res)) {
+            throw new SaveErrorMessage();
+        }
+
+        $ids_arr = $ids;
+        foreach ($ids as $v) {
+            $info = self::info($v);
+            $ids_arr[] = $info['menu_url'];
+        }
+        MenuCache::del($ids_arr);
+
+        $update['ids'] = $ids;
+
+        return $update;
+    }
+
+    /**
      * 菜单角色
      *
      * @param array $where 条件
@@ -526,28 +564,28 @@ class MenuService
     {
         $MenuModel = new MenuModel();
         $MenuPk = $MenuModel->getPk();
-        $admin_menu_id = $param[$MenuPk];
+        $menu_id = $param[$MenuPk];
 
         $RoleModel = new RoleModel();
         $RolePk = $RoleModel->getPk();
         $admin_role_id = $param[$RolePk];
 
         $role = RoleService::info($admin_role_id);
-        $admin_menu_ids = $role['admin_menu_ids'];
-        foreach ($admin_menu_ids as $k => $v) {
-            if ($admin_menu_id == $v) {
-                unset($admin_menu_ids[$k]);
+        $menu_ids = $role['menu_ids'];
+        foreach ($menu_ids as $k => $v) {
+            if ($menu_id == $v) {
+                unset($menu_ids[$k]);
             }
         }
-        if (empty($admin_menu_ids)) {
-            $admin_menu_ids = str_join('');
+        if (empty($menu_ids)) {
+            $menu_ids = str_join('');
         }
         else {
-            $admin_menu_ids = str_join(implode(',', $admin_menu_ids));
+            $menu_ids = str_join(implode(',', $menu_ids));
         }
 
         $update['update_time'] = datetime();
-        $update['admin_menu_ids'] = $admin_menu_ids;
+        $update['menu_ids'] = $menu_ids;
 
         $res = $RoleModel->where($RolePk, $admin_role_id)->update($update);
         if (empty($res)) {
@@ -556,7 +594,7 @@ class MenuService
 
         RoleCache::del($admin_role_id);
 
-        $update[$MenuPk] = $admin_menu_id;
+        $update[$MenuPk] = $menu_id;
         $update[$RolePk] = $admin_role_id;
 
         return $update;
@@ -597,28 +635,28 @@ class MenuService
     {
         $MenuModel = new MenuModel();
         $MenuPk = $MenuModel->getPk();
-        $admin_menu_id = $param[$MenuPk];
+        $menu_id = $param[$MenuPk];
 
         $UserModel = new UserModel();
         $UserPk = $UserModel->getPk();
         $admin_user_id = $param[$UserPk];
 
         $user = UserService::info($admin_user_id);
-        $admin_menu_ids = $user['admin_menu_ids'];
-        foreach ($admin_menu_ids as $k => $v) {
-            if ($admin_menu_id == $v) {
-                unset($admin_menu_ids[$k]);
+        $menu_ids = $user['menu_ids'];
+        foreach ($menu_ids as $k => $v) {
+            if ($menu_id == $v) {
+                unset($menu_ids[$k]);
             }
         }
-        if (empty($admin_menu_ids)) {
-            $admin_menu_ids = str_join('');
+        if (empty($menu_ids)) {
+            $menu_ids = str_join('');
         }
         else {
-            $admin_menu_ids = str_join(implode(',', $admin_menu_ids));
+            $menu_ids = str_join(implode(',', $menu_ids));
         }
 
         $update['update_time'] = datetime();
-        $update['admin_menu_ids'] = $admin_menu_ids;
+        $update['menu_ids'] = $menu_ids;
 
         $res = $UserModel->where($UserPk, $admin_user_id)->update($update);
         if (empty($res)) {
@@ -627,7 +665,7 @@ class MenuService
 
         UserCache::upd($admin_user_id);
 
-        $update[$MenuPk] = $admin_menu_id;
+        $update[$MenuPk] = $menu_id;
         $update[$UserPk] = $admin_user_id;
 
         return $update;
@@ -637,18 +675,18 @@ class MenuService
      * 菜单获取所有子级
      *
      * @param array $menu 菜单列表
-     * @param int $admin_menu_id 菜单id
+     * @param int $menu_id 菜单id
      *
      * @return array
      */
-    public static function getChildren($menu, $admin_menu_id)
+    public static function getChildren($menu, $menu_id)
     {
         $model = new MenuModel();
         $pk = $model->getPk();
 
         $children = [];
         foreach ($menu as $v) {
-            if ($v['menu_pid'] == $admin_menu_id) {
+            if ($v['menu_pid'] == $menu_id) {
                 $children[] = $v[$pk];
                 $children = array_merge($children, self::getChildren($menu, $v[$pk]));
             }
@@ -716,7 +754,7 @@ class MenuService
             $model = new MenuModel();
 
             $list = $model->where('is_unlogin', 1)->column('menu_url');
-            $unlogin = Config::get('admin.menu_is_unlogin');
+            $unlogin = Config::get('menu.menu_is_unlogin');
             $list = array_merge($list, $unlogin);
             $list = array_unique(array_filter($list));
 
@@ -740,7 +778,7 @@ class MenuService
 
             $list = $model->where('is_unauth', 1)->column('menu_url');
             $unlogin = self::unloginUrl();
-            $unauth = Config::get('admin.menu_is_unauth');
+            $unauth = Config::get('menu.menu_is_unauth');
             $list = array_merge($list, $unlogin, $unauth);
             $list = array_unique(array_filter($list));
 
@@ -760,8 +798,31 @@ class MenuService
         $key = 'unrateUrl';
         $list = MenuCache::get($key);
         if (empty($list)) {
-            $unrate = Config::get('admin.menu_is_unrate');
+            $unrate = Config::get('menu.menu_is_unrate');
             $list = array_unique(array_filter($unrate));
+
+            MenuCache::set($key, $list);
+        }
+
+        return $list;
+    }
+
+    /**
+     * 菜单无需日志记录url列表
+     *
+     * @return array
+     */
+    public static function unlogUrl()
+    {
+        $key = 'unlogUrl';
+        $list = MenuCache::get($key);
+        if (empty($list)) {
+            $model = new MenuModel();
+
+            $list = $model->where('is_unlog', 1)->column('menu_url');
+            $unlog = Config::get('menu.menu_is_unlog');
+            $list = array_merge($list, $unlog);
+            $list = array_unique(array_filter($list));
 
             MenuCache::set($key, $list);
         }

@@ -31,7 +31,7 @@ class BaseException extends Exception
                 $this->code = $params['code'];
             }
             if (array_key_exists('message', $params)) {
-                $this->message = $params['message'];
+                $this->message = is_array($params['message']) ? implode(PHP_EOL, $params['message']) : $params['message'];
             }
             if (array_key_exists('showType', $params)) {
                 $this->showType = $params['showType'];

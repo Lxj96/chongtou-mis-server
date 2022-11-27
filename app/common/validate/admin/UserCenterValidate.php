@@ -15,7 +15,7 @@ class UserCenterValidate extends Validate
 {
     // 验证规则
     protected $rule = [
-        'admin_user_id' => ['require'],
+        'user_id' => ['require'],
         'username' => ['require', 'checkUsername', 'length' => '2,32'],
         'nickname' => ['require', 'checkNickname', 'length' => '1,32'],
         'password_old' => ['require'],
@@ -39,11 +39,11 @@ class UserCenterValidate extends Validate
 
     // 验证场景
     protected $scene = [
-        'id' => ['admin_user_id'],
-        'info' => ['admin_user_id'],
-        'edit' => ['admin_user_id', 'username', 'nickname', 'phone', 'email'],
-        'pwd' => ['admin_user_id', 'password_old', 'password_new'],
-        'log' => ['admin_user_id'],
+        'id' => ['user_id'],
+        'info' => ['user_id'],
+        'edit' => ['user_id', 'username', 'nickname', 'phone', 'email'],
+        'pwd' => ['user_id', 'password_old', 'password_new'],
+        'log' => ['user_id'],
     ];
 
     // 自定义验证规则：账号是否已存在

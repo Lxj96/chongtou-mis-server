@@ -11,7 +11,6 @@ namespace app\admin\controller\admin;
 use think\facade\Request;
 use app\common\validate\admin\SettingValidate;
 use app\common\service\admin\SettingService;
-use hg\apidoc\annotation as Apidoc;
 
 class Setting
 {

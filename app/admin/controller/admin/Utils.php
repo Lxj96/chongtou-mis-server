@@ -9,21 +9,14 @@
 namespace app\admin\controller\admin;
 
 use think\facade\Request;
-use app\common\validate\admin\UtilsValidate;
-use app\common\service\admin\UtilsService;
-use hg\apidoc\annotation as Apidoc;
+use app\common\validate\UtilsValidate;
+use app\common\service\UtilsService;
 
-/**
- * @Apidoc\Title("实用工具")
- * @Apidoc\Group("adminSystem")
- * @Apidoc\Sort("730")
- */
+
 class Utils
 {
     /**
-     * @Apidoc\Title("随机字符串")
-     * @Apidoc\Param("strrand_ids", type="array", require=true, default="[1,2,3]", desc="所用字符")
-     * @Apidoc\Param("strrand_len", type="int", require=true, default="12", desc="字符长度")
+     * 随机字符串
      */
     public function strrand()
     {
@@ -38,8 +31,7 @@ class Utils
     }
 
     /**
-     * @Apidoc\Title("字符串转换")
-     * @Apidoc\Param("str", type="string", default="", desc="字符串")
+     * 字符串转换
      */
     public function strtran()
     {
@@ -51,9 +43,7 @@ class Utils
     }
 
     /**
-     * @Apidoc\Title("时间戳转换")
-     * @Apidoc\Param("type", type="string", default="", desc="转换类型")
-     * @Apidoc\Param("value", type="string", default="", desc="时间、时间戳")
+     * 时间戳转换
      */
     public function timestamp()
     {
@@ -66,9 +56,7 @@ class Utils
     }
 
     /**
-     * @Apidoc\Title("字节转换")
-     * @Apidoc\Param("type", type="string", default="B", desc="转换类型")
-     * @Apidoc\Param("value", type="string", default="1024", desc="数值")
+     * 字节转换
      */
     public function bytetran()
     {
@@ -81,8 +69,7 @@ class Utils
     }
 
     /**
-     * @Apidoc\Title("IP信息")
-     * @Apidoc\Param("ip", type="string", default="", desc="ip")
+     * IP信息
      */
     public function ipinfo()
     {
@@ -97,7 +84,7 @@ class Utils
     }
 
     /**
-     * @Apidoc\Title("服务器信息")
+     * 服务器信息
      */
     public function server()
     {

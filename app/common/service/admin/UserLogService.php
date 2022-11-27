@@ -140,7 +140,7 @@ class UserLogService
     public static function add($param = [])
     {
         // 日志记录是否开启
-        if (admin_log_switch()) {
+        if (log_switch()) {
             $request_param = Request::param();
             if (isset($request_param['password'])) {
                 unset($request_param['password']);
@@ -155,7 +155,7 @@ class UserLogService
             $menu = MenuService::info();
             $ip_info = IpInfoUtils::info();
 
-            $param['admin_menu_id'] = $menu['admin_menu_id'];
+            $param['menu_id'] = $menu['menu_id'];
             $param['request_ip'] = $ip_info['ip'];
             $param['request_country'] = $ip_info['country'];
             $param['request_province'] = $ip_info['province'];
@@ -191,7 +191,7 @@ class UserLogService
 
         $res = $model->where($pk, $id)->update($param);
         if (empty($res)) {
-            exception();
+            throw new SaveErrorMessage();
         }
 
         UserLogCache::del($id);
@@ -418,7 +418,7 @@ class UserLogService
             $where[] = [$group, '<>', ''];
         }
         else {
-            $group = 'admin_user_id';
+            $group = 'user_id';
             $field = $group . ' as x';
             $where[] = [$group, '<>', ''];
         }
@@ -440,14 +440,14 @@ class UserLogService
             if ($type == 'user') {
                 $UserModel = new UserModel();
                 $UserPk = $UserModel->getPk();
-                $admin_user_ids = array_column($user_log, 'x');
-                $user = $UserModel->field($UserPk . ',username')->where($UserPk, 'in', $admin_user_ids)->select()->toArray();
+                $user_ids = array_column($user_log, 'x');
+                $user = $UserModel->field($UserPk . ',username')->where($UserPk, 'in', $user_ids)->select()->toArray();
             }
 
             foreach ($user_log as $v) {
                 if ($type == 'user') {
                     foreach ($user as $va) {
-                        if ($v['x'] == $va['admin_user_id']) {
+                        if ($v['x'] == $va['user_id']) {
                             $v['x'] = $va['username'];
                         }
                     }

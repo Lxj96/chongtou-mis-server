@@ -14,9 +14,7 @@ class RoleModel extends BaseModel
 {
     // 表名
     protected $name = 'admin_role';
-    // 表主键
-    protected $pk = 'admin_role_id';
-
+    protected $pk = 'role_id';
     protected $type = [
         'is_disable' => 'boolean',
     ];

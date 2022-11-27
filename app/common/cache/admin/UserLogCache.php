@@ -35,7 +35,7 @@ class UserLogCache
      */
     public static function set($admin_user_log_id, $admin_user_log, $ttl = 18000)
     {
-        return Cache::set(self::key($admin_user_log_id), $admin_user_log, $ttl);
+        return Cache::tag('admin')->set(self::key($admin_user_log_id), $admin_user_log, $ttl);
     }
 
     /**

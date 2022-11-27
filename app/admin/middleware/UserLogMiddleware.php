@@ -26,9 +26,9 @@ class UserLogMiddleware
     {
         $response = $next($request);
 
-        $admin_user_id = admin_user_id();
+        $admin_user_id = user_id();
 
-        if ($admin_user_id) {
+        if ($admin_user_id && !menu_is_unlog()) {
 
             $response_data = $response->getData();
 
@@ -45,7 +45,7 @@ class UserLogMiddleware
                 $admin_user_log['response_msg'] = $response_data['message'];
             }
 
-            $admin_user_log['admin_user_id'] = $admin_user_id;
+            $admin_user_log['user_id'] = $admin_user_id;
             UserLogService::add($admin_user_log);
         }
 

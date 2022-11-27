@@ -18,7 +18,7 @@ class MenuValidate extends Validate
     // 验证规则
     protected $rule = [
         'ids' => ['require', 'array'],
-        'admin_menu_id' => ['require', 'integer'],
+        'menu_id' => ['require', 'integer'],
         'menu_name' => ['require', 'checkAdminMenuName'],
     ];
 
@@ -29,19 +29,20 @@ class MenuValidate extends Validate
 
     // 验证场景
     protected $scene = [
-        'id' => ['admin_menu_id'],
-        'info' => ['admin_menu_id'],
+        'id' => ['menu_id'],
+        'info' => ['menu_id'],
         'add' => ['menu_name'],
-        'edit' => ['admin_menu_id', 'menu_name'],
+        'edit' => ['menu_id', 'menu_name'],
         'del' => ['ids'],
         'pid' => ['ids'],
         'unauth' => ['ids'],
         'unlogin' => ['ids'],
+        'unlog' => ['ids'],
         'disable' => ['ids'],
-        'role' => ['admin_menu_id'],
-        'roleRemove' => ['admin_menu_id'],
-        'user' => ['admin_menu_id'],
-        'userRemove' => ['admin_menu_id'],
+        'role' => ['menu_id'],
+        'roleRemove' => ['menu_id'],
+        'user' => ['menu_id'],
+        'userRemove' => ['menu_id'],
     ];
 
     // 验证场景定义：删除
@@ -54,8 +55,8 @@ class MenuValidate extends Validate
     // 验证场景定义：角色解除
     protected function sceneRoleRemove()
     {
-        return $this->only(['admin_menu_id'])
-            ->append('admin_menu_id', 'checkAdminMenuRoleRemove');
+        return $this->only(['menu_id'])
+            ->append('menu_id', 'checkAdminMenuRoleRemove');
     }
 
     // 自定义验证规则：菜单名称是否已存在
@@ -64,15 +65,15 @@ class MenuValidate extends Validate
         $MenuModel = new MenuModel();
         $MenuPk = $MenuModel->getPk();
 
-        $admin_menu_id = isset($data[$MenuPk]) ? $data[$MenuPk] : '';
-        if ($admin_menu_id) {
+        $menu_id = isset($data[$MenuPk]) ? $data[$MenuPk] : '';
+        if ($menu_id) {
             if ($data['menu_pid'] == $data[$MenuPk]) {
                 return '菜单上级不能等于菜单本身';
             }
         }
 
-        if ($admin_menu_id) {
-            $name_where[] = [$MenuPk, '<>', $admin_menu_id];
+        if ($menu_id) {
+            $name_where[] = [$MenuPk, '<>', $menu_id];
         }
         $name_where[] = ['menu_pid', '=', $data['menu_pid']];
         $name_where[] = ['menu_name', '=', $data['menu_name']];
@@ -82,8 +83,8 @@ class MenuValidate extends Validate
         }
 
         if ($data['menu_url']) {
-            if ($admin_menu_id) {
-                $url_where[] = [$MenuPk, '<>', $admin_menu_id];
+            if ($menu_id) {
+                $url_where[] = [$MenuPk, '<>', $menu_id];
             }
             $url_where[] = ['menu_url', '=', $data['menu_url']];
             $menu_url = $MenuModel->field($MenuPk)->where($url_where)->find();
@@ -114,13 +115,13 @@ class MenuValidate extends Validate
                 return '请删除所有下级菜单后再删除';
             }
 
-            $role_where[] = ['admin_menu_ids', 'like', '%' . str_join($v) . '%'];
+            $role_where[] = ['menu_ids', 'like', '%' . str_join($v) . '%'];
             $role = $RoleModel->field($RolePk)->where($role_where)->find();
             if ($role) {
                 return '请在[角色]中解除所有角色后再删除';
             }
 
-            $user_where[] = ['admin_menu_ids', 'like', '%' . str_join($v) . '%'];
+            $user_where[] = ['menu_ids', 'like', '%' . str_join($v) . '%'];
             $user = $UserModel->field($UserPk)->where($user_where)->find();
             if ($user) {
                 return '请在[用户]中解除所有用户后再删除';

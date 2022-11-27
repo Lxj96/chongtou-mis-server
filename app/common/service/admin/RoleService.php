@@ -68,17 +68,17 @@ class RoleService
             }
             $info = $info->toArray();
 
-            $admin_menu_ids = str_trim($info['admin_menu_ids']);
-            if (empty($admin_menu_ids)) {
-                $admin_menu_ids = [];
+            $menu_ids = str_trim($info['menu_ids']);
+            if (empty($menu_ids)) {
+                $menu_ids = [];
             }
             else {
-                $admin_menu_ids = explode(',', $admin_menu_ids);
-                foreach ($admin_menu_ids as $k => $v) {
-                    $admin_menu_ids[$k] = (int)$v;
+                $menu_ids = explode(',', $menu_ids);
+                foreach ($menu_ids as $k => $v) {
+                    $menu_ids[$k] = (int)$v;
                 }
             }
-            $info['admin_menu_ids'] = $admin_menu_ids;
+            $info['menu_ids'] = $menu_ids;
 
             RoleCache::set($id, $info);
         }
@@ -99,10 +99,10 @@ class RoleService
         $model = new RoleModel();
         $pk = $model->getPk();
 
-        sort($param['admin_menu_ids']);
+        sort($param['menu_ids']);
 
-        $param['admin_menu_ids'] = implode(',', $param['admin_menu_ids']);
-        $param['admin_menu_ids'] = str_join($param['admin_menu_ids']);
+        $param['menu_ids'] = implode(',', $param['menu_ids']);
+        $param['menu_ids'] = str_join($param['menu_ids']);
         $param['create_time'] = datetime();
 
         $id = $model->insertGetId($param);
@@ -131,16 +131,16 @@ class RoleService
         $id = $param[$pk];
         unset($param[$pk]);
 
-        sort($param['admin_menu_ids']);
+        sort($param['menu_ids']);
 
-        if (count($param['admin_menu_ids']) > 0) {
-            if (empty($param['admin_menu_ids'][0])) {
-                unset($param['admin_menu_ids'][0]);
+        if (count($param['menu_ids']) > 0) {
+            if (empty($param['menu_ids'][0])) {
+                unset($param['menu_ids'][0]);
             }
         }
 
-        $param['admin_menu_ids'] = implode(',', $param['admin_menu_ids']);
-        $param['admin_menu_ids'] = str_join($param['admin_menu_ids']);
+        $param['menu_ids'] = implode(',', $param['menu_ids']);
+        $param['menu_ids'] = str_join($param['menu_ids']);
         $param['update_time'] = datetime();
 
         $res = $model->where($pk, $id)->update($param);
@@ -243,42 +243,42 @@ class RoleService
     {
         $RoleModel = new RoleModel();
         $RolePk = $RoleModel->getPk();
-        $admin_role_id = $param[$RolePk];
+        $role_id = $param[$RolePk];
 
         $UserModel = new UserModel();
         $UserPk = $UserModel->getPk();
-        $admin_user_id = $param[$UserPk];
+        $user_id = $param[$UserPk];
 
-        $admin_role_ids = [];
-        $user = UserService::info($admin_user_id);
+        $role_ids = [];
+        $user = UserService::info($user_id);
         if ($user) {
-            $admin_role_ids = $user['admin_role_ids'];
-            foreach ($admin_role_ids as $k => $v) {
-                if ($admin_role_id == $v) {
-                    unset($admin_role_ids[$k]);
+            $role_ids = $user['role_ids'];
+            foreach ($role_ids as $k => $v) {
+                if ($role_id == $v) {
+                    unset($role_ids[$k]);
                 }
             }
         }
 
-        if (empty($admin_role_ids)) {
-            $admin_role_ids = str_join('');
+        if (empty($role_ids)) {
+            $role_ids = str_join('');
         }
         else {
-            $admin_role_ids = str_join(implode(',', $admin_role_ids));
+            $role_ids = str_join(implode(',', $role_ids));
         }
 
-        $update['admin_role_ids'] = $admin_role_ids;
+        $update['role_ids'] = $role_ids;
         $update['update_time'] = datetime();
 
-        $res = $UserModel->where($UserPk, $admin_user_id)->update($update);
+        $res = $UserModel->where($UserPk, $user_id)->update($update);
         if (empty($res)) {
             throw new SaveErrorMessage();
         }
 
-        UserCache::upd($admin_user_id);
+        UserCache::upd($user_id);
 
-        $update[$RolePk] = $admin_role_id;
-        $update[$UserPk] = $admin_user_id;
+        $update[$RolePk] = $role_id;
+        $update[$UserPk] = $user_id;
 
         return $update;
     }
@@ -297,25 +297,25 @@ class RoleService
         }
 
         if (is_numeric($id)) {
-            $admin_role_ids[] = $id;
+            $role_ids[] = $id;
         }
         elseif (is_array($id)) {
-            $admin_role_ids = $id;
+            $role_ids = $id;
         }
         else {
             $id = str_trim($id);
-            $admin_role_ids = explode(',', $id);
+            $role_ids = explode(',', $id);
         }
 
-        $admin_menu_ids = [];
-        foreach ($admin_role_ids as $v) {
+        $menu_ids = [];
+        foreach ($role_ids as $v) {
             $info = self::info($v);
-            $admin_menu_ids = array_merge($admin_menu_ids, $info['admin_menu_ids']);
+            $menu_ids = array_merge($menu_ids, $info['menu_ids']);
         }
-        $admin_menu_ids = array_unique($admin_menu_ids);
+        $menu_ids = array_unique($menu_ids);
 
-        sort($admin_menu_ids);
+        sort($menu_ids);
 
-        return $admin_menu_ids;
+        return $menu_ids;
     }
 }

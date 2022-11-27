@@ -14,6 +14,5 @@ class UserLogModel extends BaseModel
 {
     // 表名
     protected $name = 'admin_user_log';
-    // 表主键
-    protected $pk = 'admin_user_log_id';
+    protected $pk = 'user_log_id';
 }

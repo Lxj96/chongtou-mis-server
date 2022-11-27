@@ -40,7 +40,7 @@ class SettingService
             $info = $model->find($id);
             if (empty($info)) {
                 $info[$pk] = $id;
-                $info['token_name'] = Config::get('admin.token_name');
+                $info['token_name'] = Config::get('menu.token_name');
                 $info['token_key'] = uniqid();
                 $model->insert($info);
                 $info = $model->find($id);
@@ -117,19 +117,19 @@ class SettingService
             if ($user_old) {
                 $user_cache_temp = [];
                 $user_cache_temp[$UserPk] = $user_old[$UserPk];
-                $user_cache_temp['admin_token'] = $user_old['admin_token'];
+                $user_cache_temp['token'] = $user_old['token'];
                 $user_cache[] = $user_cache_temp;
             }
         }
 
-        $res = Cache::clear();
+        $res = Cache::tag('admin')->clear();
         if (empty($res)) {
             throw new SaveErrorMessage();
         }
 
         foreach ($user_cache as $v) {
             $user_new = UserService::info($v[$UserPk]);
-            $user_new['admin_token'] = $v['admin_token'];
+            $user_new['token'] = $v['token'];
             UserCache::set($user_new[$UserPk], $user_new);
         }
 

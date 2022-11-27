@@ -12,7 +12,6 @@ use app\common\exception\MissException;
 use app\common\model\admin\MenuModel;
 use app\common\model\admin\UserModel;
 use app\common\service\admin\UserLogService;
-use app\common\utils\DatetimeUtils;
 use app\common\validate\admin\UserLogValidate;
 use think\response\Json;
 
@@ -41,7 +40,7 @@ class UserLog
             $where[] = ['log_type', '=', $log_type];
         }
         if ($search_field && $search_words) {
-            if (in_array($search_field, ['admin_user_log_id', 'admin_user_id', 'admin_menu_id'])) {
+            if (in_array($search_field, ['user_log_id', 'user_id', 'menu_id'])) {
                 $search_exp = strpos($search_words, ',') ? 'in' : '=';
                 $where[] = [$search_field, $search_exp, $search_words];
             }
@@ -50,16 +49,16 @@ class UserLog
                 $UserPk = $UserModel->getPk();
                 $user_exp = strpos($search_words, ',') ? 'in' : '=';
                 $user_where[] = [$search_field, $user_exp, $search_words];
-                $admin_user_ids = $UserModel->where($user_where)->column($UserPk);
-                $where[] = [$UserPk, 'in', $admin_user_ids];
+                $user_ids = $UserModel->where($user_where)->column($UserPk);
+                $where[] = [$UserPk, 'in', $user_ids];
             }
             elseif (in_array($search_field, ['menu_url', 'menu_name'])) {
                 $MenuModel = new MenuModel();
                 $MenuPk = $MenuModel->getPk();
                 $menu_exp = strpos($search_words, ',') ? 'in' : '=';
                 $menu_where[] = [$search_field, $menu_exp, $search_words];
-                $admin_menu_ids = $MenuModel->where($menu_where)->column($MenuPk);
-                $where[] = [$MenuPk, 'in', $admin_menu_ids];
+                $menu_ids = $MenuModel->where($menu_where)->column($MenuPk);
+                $where[] = [$MenuPk, 'in', $menu_ids];
             }
             else {
                 $where[] = [$search_field, 'like', '%' . $search_words . '%'];
@@ -81,11 +80,11 @@ class UserLog
      */
     public function read()
     {
-        $param['admin_user_log_id'] = input('get.admin_user_log_id/d', 0);
+        $param['user_log_id'] = input('get.user_log_id/d', 0);
 
         validate(UserLogValidate::class)->scene('info')->check($param);
 
-        $data = UserLogService::info($param['admin_user_log_id']);
+        $data = UserLogService::info($param['user_log_id']);
         if (empty($data)) {
             throw new MissException();
         }
@@ -114,44 +113,44 @@ class UserLog
      */
     public function clear()
     {
-        $admin_user_id = input('admin_user_id/s', '');
+        $user_id = input('user_id/s', '');
         $username = input('username/s', '');
-        $admin_menu_id = input('admin_menu_id/s', '');
+        $menu_id = input('menu_id/s', '');
         $menu_url = input('menu_url/s', '');
         $date_value = input('date_value/a', '');
         $clean = input('clean/b', false);
 
         $where = [];
-        $admin_user_ids = [];
-        if ($admin_user_id) {
-            $admin_user_ids = array_merge(explode(',', $admin_user_id), $admin_user_ids);
+        $user_ids = [];
+        if ($user_id) {
+            $user_ids = array_merge(explode(',', $user_id), $user_ids);
         }
         if ($username) {
             $UserModel = new UserModel();
             $UserPk = $UserModel->getPk();
             $user_ids = $UserModel->where('username', 'in', $username)->column($UserPk);
             if ($user_ids) {
-                $admin_user_ids = array_merge($user_ids, $admin_user_ids);
+                $user_ids = array_merge($user_ids, $user_ids);
             }
         }
-        if ($admin_user_ids) {
-            $where[] = ['admin_user_id', 'in', $admin_user_ids];
+        if ($user_ids) {
+            $where[] = ['user_id', 'in', $user_ids];
         }
 
-        $admin_menu_ids = [];
-        if ($admin_menu_id) {
-            $admin_menu_ids = array_merge(explode(',', $admin_menu_id), $admin_menu_ids);
+        $menu_ids = [];
+        if ($menu_id) {
+            $menu_ids = array_merge(explode(',', $menu_id), $menu_ids);
         }
         if ($menu_url) {
             $MenuModel = new MenuModel();
             $MenuPk = $MenuModel->getPk();
             $menu_ids = $MenuModel->where('menu_url', 'in', $menu_url)->column($MenuPk);
             if ($menu_ids) {
-                $admin_menu_ids = array_merge($menu_ids, $admin_menu_ids);
+                $menu_ids = array_merge($menu_ids, $menu_ids);
             }
         }
-        if ($admin_menu_ids) {
-            $where[] = ['admin_menu_id', 'in', $admin_menu_ids];
+        if ($menu_ids) {
+            $where[] = ['menu_id', 'in', $menu_ids];
         }
 
         if ($date_value) {

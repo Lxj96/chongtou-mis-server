@@ -35,7 +35,7 @@ class RoleCache
      */
     public static function set($admin_role_id, $admin_role, $ttl = 86400)
     {
-        return Cache::set(self::key($admin_role_id), $admin_role, $ttl);
+        return Cache::tag('admin')->set(self::key($admin_role_id), $admin_role, $ttl);
     }
 
     /**

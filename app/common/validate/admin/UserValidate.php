@@ -17,7 +17,7 @@ class UserValidate extends Validate
     // 验证规则
     protected $rule = [
         'ids' => ['require', 'array'],
-        'admin_user_id' => ['require', 'integer'],
+        'user_id' => ['require', 'integer'],
         'username' => ['require', 'checkUsername', 'length' => '2,32'],
         'nickname' => ['require', 'checkNickname', 'length' => '1,32'],
         'password' => ['require', 'length' => '4,18'],
@@ -39,16 +39,16 @@ class UserValidate extends Validate
 
     // 验证场景
     protected $scene = [
-        'id' => ['admin_user_id'],
-        'info' => ['admin_user_id'],
+        'id' => ['user_id'],
+        'info' => ['user_id'],
         'login' => ['username', 'password'],
         'add' => ['username', 'nickname', 'password', 'phone', 'email'],
-        'edit' => ['admin_user_id', 'username', 'nickname', 'phone', 'email'],
+        'edit' => ['user_id', 'username', 'nickname', 'phone', 'email'],
         'del' => ['ids'],
         'pwd' => ['ids', 'password'],
         'super' => ['ids'],
         'disable' => ['ids'],
-        'rule' => ['admin_user_id'],
+        'rule' => ['user_id'],
     ];
 
     // 验证场景定义：登录
@@ -62,8 +62,8 @@ class UserValidate extends Validate
     // 验证场景定义：修改
     protected function sceneEdit()
     {
-        return $this->only(['admin_user_id', 'username', 'nickname', 'email', 'phone'])
-            ->append('admin_user_id', ['checkAdminUserIsSuper']);
+        return $this->only(['user_id', 'username', 'nickname', 'email', 'phone'])
+            ->append('user_id', ['checkAdminUserIsSuper']);
     }
 
     // 验证场景定义：删除
@@ -76,8 +76,8 @@ class UserValidate extends Validate
     // 验证场景定义：分配权限
     protected function sceneRule()
     {
-        return $this->only(['admin_user_id'])
-            ->append('admin_user_id', ['checkAdminUserIsSuper']);
+        return $this->only(['user_id'])
+            ->append('user_id', ['checkAdminUserIsSuper']);
     }
 
     // 验证场景定义：是否超管
@@ -106,8 +106,8 @@ class UserValidate extends Validate
     {
         $ids = $data['ids'];
         foreach ($ids as $v) {
-            $admin_is_super = admin_is_super($v);
-            if ($admin_is_super) {
+            $is_super = is_super($v);
+            if ($is_super) {
                 return '无法对系统用户进行操作:' . $v;
             }
         }
@@ -201,9 +201,9 @@ class UserValidate extends Validate
         }
 
         foreach ($ids as $v) {
-            $admin_is_super = admin_is_super(admin_user_id());
-            $admin_user_id = admin_is_super($v);
-            if (!$admin_is_super && $admin_user_id) {
+            $is_super = is_super(user_id());
+            $user_id = is_super($v);
+            if (!$is_super && $user_id) {
                 return '无法对系统用户进行操作:' . $v;
             }
         }
@@ -216,8 +216,8 @@ class UserValidate extends Validate
     {
         $ids = $data['ids'];
         foreach ($ids as $v) {
-            $admin_is_super = admin_is_super($v);
-            if ($admin_is_super) {
+            $is_super = is_super($v);
+            if ($is_super) {
                 return '无法对系统用户进行操作:' . $v;
             }
         }
@@ -231,7 +231,7 @@ class UserValidate extends Validate
         $ids = $data['ids'];
         foreach ($ids as $v) {
             $user = UserService::info($v);
-            if ($user['admin_role_ids'] || $user['admin_menu_ids']) {
+            if ($user['role_ids'] || $user['menu_ids']) {
                 return '请在[权限]中取消所有角色和菜单后再删除';
             }
         }

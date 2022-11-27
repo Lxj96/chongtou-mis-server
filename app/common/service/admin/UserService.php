@@ -93,19 +93,19 @@ class UserService
             $MenuPk = $MenuModel->getPk();
 
             $info['avatar_url'] = FileService::fileUrl($info['avatar_id']);
-            $info['admin_role_ids'] = str_trim($info['admin_role_ids']);
-            $info['admin_menu_ids'] = str_trim($info['admin_menu_ids']);
+            $info['role_ids'] = str_trim($info['role_ids']);
+            $info['menu_ids'] = str_trim($info['menu_ids']);
 
             // 获取当前用户可查看的菜单url
-            if (admin_is_super($id)) { // 在配置文件中设置成了超管
+            if (is_super($id)) { // 在配置文件中设置成了超管
                 $menu = $MenuModel->field($MenuPk . ',menu_url')->select()->toArray();
-                $menu_ids = array_column($menu, 'admin_menu_id');
+                $menu_ids = array_column($menu, 'menu_id');
                 $menu_url = array_column($menu, 'menu_url');
                 $menu_url = array_filter($menu_url);
             }
             elseif ($info['is_super'] == 1) {// 数据库中设置成了超管
                 $menu = $MenuModel->field($MenuPk . ',menu_url')->where('is_disable', 0)->select()->toArray();
-                $menu_ids = array_column($menu, 'admin_menu_id');
+                $menu_ids = array_column($menu, 'menu_id');
                 $menu_url = array_column($menu, 'menu_url');
                 $menu_url = array_filter($menu_url);
             }
@@ -114,11 +114,11 @@ class UserService
                 $RolePk = $RoleModel->getPk();
 
                 // 根据用户所在角色获取可查看的菜单id
-                $menu_where[] = [$RolePk, 'in', $info['admin_role_ids']];
+                $menu_where[] = [$RolePk, 'in', $info['role_ids']];
                 $menu_where[] = ['is_disable', '=', 0];
-                $menu_ids = $RoleModel->where($menu_where)->column('admin_menu_ids');
+                $menu_ids = $RoleModel->where($menu_where)->column('menu_ids');
 
-                $menu_ids[] = $info['admin_menu_ids'];// 用户表上绑定的菜单id
+                $menu_ids[] = $info['menu_ids'];// 用户表上绑定的菜单id
 
                 // 合并角色表菜单id和用户表菜单id
                 $menu_ids_str = implode(',', $menu_ids);
@@ -128,7 +128,7 @@ class UserService
 
                 // 获取菜单url
                 // 已授权的菜单
-                $where[] = ['admin_menu_id', 'in', $menu_ids];
+                $where[] = ['menu_id', 'in', $menu_ids];
                 $where[] = ['menu_url', '<>', ''];
                 $where[] = ['is_disable', '=', 0];
                 // 无需权限校验的菜单
@@ -139,25 +139,25 @@ class UserService
                 $menu_url = $MenuModel->whereOr([$where, $where_un])->column('menu_url');
             }
 
-            $admin_role_ids = $info['admin_role_ids'];
-            if (empty($admin_role_ids)) {
-                $admin_role_ids = [];
+            $role_ids = $info['role_ids'];
+            if (empty($role_ids)) {
+                $role_ids = [];
             }
             else {
-                $admin_role_ids = explode(',', $info['admin_role_ids']);
-                foreach ($admin_role_ids as $k => $v) {
-                    $admin_role_ids[$k] = (int)$v;
+                $role_ids = explode(',', $info['role_ids']);
+                foreach ($role_ids as $k => $v) {
+                    $role_ids[$k] = (int)$v;
                 }
             }
 
-            $admin_menu_ids = $info['admin_menu_ids'];
-            if (empty($admin_menu_ids)) {
-                $admin_menu_ids = [];
+            $user_menu_ids = $info['menu_ids'];
+            if (empty($user_menu_ids)) {
+                $user_menu_ids = [];
             }
             else {
-                $admin_menu_ids = explode(',', $info['admin_menu_ids']);
-                foreach ($admin_menu_ids as $k => $v) {
-                    $admin_menu_ids[$k] = (int)$v;
+                $user_menu_ids = explode(',', $info['menu_ids']);
+                foreach ($user_menu_ids as $k => $v) {
+                    $user_menu_ids[$k] = (int)$v;
                 }
             }
 
@@ -178,9 +178,9 @@ class UserService
             $menu_url = array_unique($menu_url);
             sort($menu_url);
 
-            $info['admin_token'] = TokenService::create($info);
-            $info['admin_role_ids'] = $admin_role_ids; // 角色id组
-            $info['admin_menu_ids'] = $admin_menu_ids; // 用户表保存的菜单id组
+            $info['token'] = TokenService::create($info);
+            $info['role_ids'] = $role_ids; // 角色id组
+            $info['user_menu_ids'] = $user_menu_ids; // 用户表保存的菜单id组
             $info['menu_ids'] = $menu_ids; // 用户有权查看的所有菜单id组(不包含配置中的，因为配置中的没有id)
             $info['roles'] = $menu_url;  // 用户有权查看的所有菜单url组(包含配置中的)
 
@@ -296,69 +296,69 @@ class UserService
             $RoleModel = new RoleModel();
             $RolePk = $RoleModel->getPk();
 
-            $admin_user_id = $param[$pk];
-            $admin_menu = MenuService::list(); // 菜单列表(不包含配置中的，因为配置中的没有id)
-            $admin_role = $RoleModel->field($RolePk . ',role_name')->select()->toArray();
-            $admin_user = UserService::info($admin_user_id); // 用户信息
+            $user_id = $param[$pk];
+            $menu = MenuService::list(); // 菜单列表(不包含配置中的，因为配置中的没有id)
+            $role = $RoleModel->field($RolePk . ',role_name')->select()->toArray();
+            $user = UserService::info($user_id); // 用户信息
 
-            $menu_ids = $admin_user['menu_ids']; // 用户有权查看的所有菜单id组(不包含配置中的，因为配置中的没有id)
-            $admin_menu_ids = $admin_user['admin_menu_ids']; // 用户表保存的菜单id组
-            $role_menu_ids = RoleService::getMenuId($admin_user['admin_role_ids']); // 角色有权查看的菜单id组
+            $menu_ids = $user['menu_ids']; // 用户有权查看的所有菜单id组(不包含配置中的，因为配置中的没有id)
+            $user_menu_ids = $user['user_menu_ids']; // 用户表保存的菜单id组
+            $role_menu_ids = RoleService::getMenuId($user['role_ids']); // 角色有权查看的菜单id组
 
-            foreach ($admin_menu as $k => $v) {
-                $admin_menu[$k]['is_check'] = false; // 是否已有当前菜单权限
-                $admin_menu[$k]['is_menu'] = false; // 用户表是否已选中当前菜单权限
-                $admin_menu[$k]['is_role'] = false; // 用户所属角色是否已有当前菜单权限
+            foreach ($menu as $k => $v) {
+                $menu[$k]['is_check'] = false; // 是否已有当前菜单权限
+                $menu[$k]['is_menu'] = false; // 用户表是否已选中当前菜单权限
+                $menu[$k]['is_role'] = false; // 用户所属角色是否已有当前菜单权限
                 foreach ($menu_ids as $vmis) {
-                    if ($v['admin_menu_id'] == $vmis) {
-                        $admin_menu[$k]['is_check'] = true;
+                    if ($v['menu_id'] == $vmis) {
+                        $menu[$k]['is_check'] = true;
                     }
                 }
-                foreach ($admin_menu_ids as $vami) {
-                    if ($v['admin_menu_id'] == $vami) {
-                        $admin_menu[$k]['is_menu'] = true;
+                foreach ($user_menu_ids as $vami) {
+                    if ($v['menu_id'] == $vami) {
+                        $menu[$k]['is_menu'] = true;
                     }
                 }
                 foreach ($role_menu_ids as $vrmi) {
-                    if ($v['admin_menu_id'] == $vrmi) {
-                        $admin_menu[$k]['is_role'] = true;
+                    if ($v['menu_id'] == $vrmi) {
+                        $menu[$k]['is_role'] = true;
                     }
                 }
             }
 
-            $admin_menu = MenuService::toTree($admin_menu, 0);
+            $menu = MenuService::toTree($menu, 0);
 
-            $data[$pk] = $admin_user_id;
-            $data['username'] = $admin_user['username'];
-            $data['nickname'] = $admin_user['nickname'];
-            $data['admin_menu_ids'] = $admin_menu_ids;
-            $data['admin_role_ids'] = $admin_user['admin_role_ids'];
+            $data[$pk] = $user_id;
+            $data['username'] = $user['username'];
+            $data['nickname'] = $user['nickname'];
+            $data['user_menu_ids'] = $user_menu_ids;
+            $data['role_ids'] = $user['role_ids'];
             $data['menu_ids'] = $menu_ids;
-            $data['admin_role'] = $admin_role;
-            $data['admin_menu'] = $admin_menu;
+            $data['role'] = $role;
+            $data['menu'] = $menu;
 
             return $data;
         }
         else {
-            $admin_user_id = $param[$pk];
-            $admin_role_ids = $param['admin_role_ids'];
-            $admin_menu_ids = $param['admin_menu_ids'];
+            $user_id = $param[$pk];
+            $role_ids = $param['role_ids'];
+            $menu_ids = $param['menu_ids'];
 
-            sort($admin_role_ids);
-            sort($admin_menu_ids);
+            sort($role_ids);
+            sort($menu_ids);
 
-            $update['admin_role_ids'] = str_join(implode(',', $admin_role_ids));
-            $update['admin_menu_ids'] = str_join(implode(',', $admin_menu_ids));
+            $update['role_ids'] = str_join(implode(',', $role_ids));
+            $update['menu_ids'] = str_join(implode(',', $menu_ids));
             $update['update_time'] = datetime();
 
-            $res = $model->where($pk, $admin_user_id)->update($update);
+            $res = $model->where($pk, $user_id)->update($update);
             if (empty($res)) {
                 throw new SaveErrorMessage();
             }
 
-            UserCache::upd($admin_user_id);
+            UserCache::upd($user_id);
 
-            $update[$pk] = $admin_user_id;
+            $update[$pk] = $user_id;
 
             return $update;
         }
@@ -505,10 +505,10 @@ class UserService
         UserCache::del($user[$pk]);
         $user = self::info($user[$pk]); // 获取用户详细信息
 
-        $admin_user_id = $user[$pk];
-        $admin_token = $user['admin_token'];
+        $user_id = $user[$pk];
+        $token = $user['token'];
 
-        return compact($pk, 'admin_token');
+        return compact($pk, 'token');
     }
 
     /**
@@ -545,13 +545,13 @@ class UserService
         $user = self::info($id);// 获取用户详细信息
         // 可能存在  在刷新token的瞬间user缓存失效导致重新生成了token的情况，这样直接使用user缓存中的token
         // 缓存中的token跟header中一致  重新生成
-        if ($user['admin_token'] === admin_token()) {
+        if ($user['token'] === token()) {
             // 重新生成token
-            $admin_token = TokenService::create($user);
+            $token = TokenService::create($user);
             // 更新用户缓存Token
-            UserCache::set($id, array_merge($user, ['admin_token' => $admin_token]));
+            UserCache::set($id, array_merge($user, ['token' => $token]));
         }
 
-        return compact('admin_token');
+        return compact('token');
     }
 }

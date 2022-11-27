@@ -28,14 +28,14 @@ class TokenVerifyMiddleware
     {
         // 菜单无需登录
         if (!menu_is_unlogin()) {
-            $admin_token = admin_token();
+            $token = get_token();
 
-            if (empty($admin_token)) {
+            if (empty($token)) {
                 throw new AuthException('Requests Headers：AdminToken must');
             }
 
             // 用户Token验证
-            TokenService::verify($admin_token);
+            TokenService::verify($token);
 
         }
 

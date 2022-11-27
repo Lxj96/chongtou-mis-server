@@ -18,7 +18,7 @@ class RoleValidate extends Validate
     // 验证规则
     protected $rule = [
         'ids' => ['require', 'array'],
-        'admin_role_id' => ['require'],
+        'role_id' => ['require'],
         'role_name' => ['require', 'checkAdminRuleName'],
     ];
 
@@ -29,13 +29,13 @@ class RoleValidate extends Validate
 
     // 验证场景
     protected $scene = [
-        'id' => ['admin_role_id'],
-        'info' => ['admin_role_id'],
+        'id' => ['role_id'],
+        'info' => ['role_id'],
         'add' => ['role_name'],
-        'edit' => ['admin_role_id', 'role_name'],
+        'edit' => ['role_id', 'role_name'],
         'del' => ['ids'],
         'disable' => ['ids'],
-        'user' => ['admin_role_id'],
+        'user' => ['role_id'],
     ];
 
     // 验证场景定义：删除
@@ -71,11 +71,11 @@ class RoleValidate extends Validate
 
         foreach ($data['ids'] as $v) {
             $role = RoleService::info($v);
-            if ($role['admin_menu_ids']) {
+            if ($role['menu_ids']) {
                 return '请在[修改]中取消所有菜单后再删除';
             }
 
-            $user_where[] = ['admin_role_ids', 'like', '%' . str_join($v) . '%'];
+            $user_where[] = ['role_ids', 'like', '%' . str_join($v) . '%'];
             $user = $UserModel->field($UserPk)->where($user_where)->find();
             if ($user) {
                 return '请在[用户]中解除所有用户后再删除';

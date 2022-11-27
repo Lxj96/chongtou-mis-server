@@ -10,7 +10,6 @@ namespace app\admin\controller\admin;
 
 use app\common\model\admin\MenuModel;
 use app\common\service\admin\UserCenterService;
-use app\common\utils\DatetimeUtils;
 use app\common\validate\admin\UserCenterValidate;
 use think\response\Json;
 
@@ -22,11 +21,11 @@ class UserCenter
      */
     public function index()
     {
-        $param['admin_user_id'] = admin_user_id();
+        $param['user_id'] = user_id();
 
         validate(UserCenterValidate::class)->scene('info')->check($param);
 
-        $data = UserCenterService::info($param['admin_user_id']);
+        $data = UserCenterService::info($param['user_id']);
 
         return success($data);
     }
@@ -37,7 +36,7 @@ class UserCenter
      */
     public function update()
     {
-        $param['admin_user_id'] = admin_user_id();
+        $param['user_id'] = user_id();
         $param['avatar_id'] = input('avatar_id/d', 0);
         $param['username'] = input('username/s', '');
         $param['nickname'] = input('nickname/s', '');
@@ -57,7 +56,7 @@ class UserCenter
      */
     public function pwd()
     {
-        $param['admin_user_id'] = admin_user_id();
+        $param['user_id'] = user_id();
         $param['password_old'] = input('password_old/s', '');
         $param['password_new'] = input('password_new/s', '');
 
@@ -79,7 +78,7 @@ class UserCenter
      */
     public function log()
     {
-        $admin_user_id = admin_user_id();
+        $admin_user_id = user_id();
         // 列表通用字段
         $current = input('current/d', 1);
         $pageSize = input('pageSize/d', 10);
@@ -91,10 +90,10 @@ class UserCenter
         $date_value = input('date_value/a', []);
         $log_type = input('log_type/d', '');
 
-        validate(UserCenterValidate::class)->scene('log')->check(['admin_user_id' => $admin_user_id]);
+        validate(UserCenterValidate::class)->scene('log')->check(['user_id' => $admin_user_id]);
 
         // 构建查询条件
-        $where[] = ['admin_user_id', '=', $admin_user_id];
+        $where[] = ['user_id', '=', $admin_user_id];
         if ($log_type) {
             $where[] = ['log_type', '=', $log_type];
         }

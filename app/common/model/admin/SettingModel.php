@@ -14,8 +14,7 @@ class SettingModel extends BaseModel
 {
     // 表名
     protected $name = 'admin_setting';
-    // 表主键
-    protected $pk = 'admin_setting_id';
+    protected $pk = 'setting_id';
 
     protected $type = [
         'captcha_switch' => 'boolean',

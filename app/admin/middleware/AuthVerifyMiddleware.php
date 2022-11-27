@@ -49,11 +49,11 @@ class AuthVerifyMiddleware
         // 菜单是否无需权限
         if (!menu_is_unauth($menu_url)) {
 
-            $admin_user_id = admin_user_id();
+            $user_id = user_id();
 
             // 用户是否超管
-            if (!admin_is_super($admin_user_id)) {
-                $user = UserCache::get($admin_user_id);
+            if (!is_super($user_id)) {
+                $user = UserCache::get($user_id);
                 /*if (empty($user)) {
                     throw new AuthException('登录已失效，请重新登录');
                 }*/

@@ -36,7 +36,7 @@ class SystemCache
      */
     public static function set($id, $data, $ttl = 86400)
     {
-        return Cache::set(self::key($id), $data, $ttl);
+        return Cache::tag('admin')->set(self::key($id), $data, $ttl);
     }
 
     /**

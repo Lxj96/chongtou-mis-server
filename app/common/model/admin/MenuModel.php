@@ -14,12 +14,11 @@ class MenuModel extends BaseModel
 {
     // 表名
     protected $name = 'admin_menu';
-    // 表主键
-    protected $pk = 'admin_menu_id';
-
+    protected $pk = 'menu_id';
     protected $type = [
         'is_disable' => 'boolean',
         'is_unauth' => 'boolean',
         'is_unlogin' => 'boolean',
+        'is_unlog' => 'boolean',
     ];
 }

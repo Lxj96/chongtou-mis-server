@@ -100,10 +100,10 @@ class Login
      */
     public function refresh()
     {
-        $param['admin_user_id'] = admin_user_id();
+        $param['user_id'] = user_id();
         validate(UserValidate::class)->scene('id')->check($param);
 
-        $data = LoginService::refresh($param['admin_user_id']);
+        $data = LoginService::refresh($param['user_id']);
 
         return success($data, 'Token刷新成功');
     }
@@ -114,11 +114,11 @@ class Login
      */
     public function logout()
     {
-        $param['admin_user_id'] = admin_user_id();
+        $param['user_id'] = user_id();
 
         validate(UserValidate::class)->scene('id')->check($param);
 
-        $data = LoginService::logout($param['admin_user_id']);
+        $data = LoginService::logout($param['user_id']);
 
         return success($data, '退出成功');
     }

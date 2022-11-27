@@ -15,7 +15,7 @@ class UserLogValidate extends Validate
     // 验证规则
     protected $rule = [
         'ids' => ['require', 'array'],
-        'admin_user_log_id' => ['require'],
+        'user_log_id' => ['require'],
     ];
 
     // 错误信息
@@ -23,8 +23,8 @@ class UserLogValidate extends Validate
 
     // 验证场景
     protected $scene = [
-        'id' => ['admin_user_log_id'],
-        'info' => ['admin_user_log_id'],
+        'id' => ['user_log_id'],
+        'info' => ['user_log_id'],
         'del' => ['ids'],
     ];
 }

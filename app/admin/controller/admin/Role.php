@@ -41,14 +41,14 @@ class Role
         $pageSize = input('pageSize/d', 10);
         $order = input('sort/a', [], 'format_sort');
         // 检索字段
-        $admin_role_id = input('admin_role_id/s', '');
+        $role_id = input('role_id/s', '');
         $is_disable = input('is_disable/b');
         $search_words = input('search_words/s', '');
         $date_field = input('date_field/s', '');
         $date_value = input('date_value/a', []);
         // 构建查询条件
         $where = [];
-        if (!empty($admin_role_id)) $where[] = ['', 'exp', Db::raw("FIND_IN_SET(admin_role_id,'" . $admin_role_id . "')")];
+        if (!empty($role_id)) $where[] = ['', 'exp', Db::raw("FIND_IN_SET(role_id,'" . $role_id . "')")];
         if (!empty($search_words)) $where[] = ['role_name|role_desc', 'like', '%' . $search_words . '%'];
         if (is_bool($is_disable)) {
             $where[] = ['is_disable', '=', $is_disable];
@@ -71,10 +71,10 @@ class Role
      */
     public function read()
     {
-        $param['admin_role_id'] = input('get.admin_role_id/d', 0);
+        $param['role_id'] = input('get.role_id/d', 0);
         validate(RoleValidate::class)->scene('info')->check($param);
 
-        $data = RoleService::info($param['admin_role_id']);
+        $data = RoleService::info($param['role_id']);
         if (empty($data)) {
             throw new MissException();
         }
@@ -88,7 +88,7 @@ class Role
      */
     public function save()
     {
-        $param['admin_menu_ids'] = input('admin_menu_ids/a', '');
+        $param['menu_ids'] = input('menu_ids/a', '');
         $param['role_name'] = input('role_name/s', '');
         $param['role_desc'] = input('role_desc/s', '');
         $param['role_sort'] = input('role_sort/d', 250);
@@ -106,8 +106,8 @@ class Role
      */
     public function update()
     {
-        $param['admin_role_id'] = input('admin_role_id/d', 0);
-        $param['admin_menu_ids'] = input('admin_menu_ids/a', '');
+        $param['role_id'] = input('role_id/d', 0);
+        $param['menu_ids'] = input('menu_ids/a', '');
         $param['role_name'] = input('role_name/s', '');
         $param['role_desc'] = input('role_desc/s', '');
         $param['role_sort'] = input('role_sort/d', 250);
@@ -161,11 +161,11 @@ class Role
         $pageSize = input('pageSize/d', 10);
         $order = input('sort/a', [], 'format_sort');
         // 检索字段
-        $admin_role_id = input('admin_role_id/d', '');
+        $role_id = input('role_id/d', '');
 
-        validate(RoleValidate::class)->scene('user')->check(['admin_role_id' => $admin_role_id]);
+        validate(RoleValidate::class)->scene('user')->check(['role_id' => $role_id]);
 
-        $where[] = ['admin_role_ids', 'like', '%' . str_join($admin_role_id) . '%'];
+        $where[] = ['role_ids', 'like', '%' . str_join($role_id) . '%'];
 
         $data = RoleService::user($where, $current, $pageSize, $order);
 
@@ -178,8 +178,8 @@ class Role
      */
     public function userRemove()
     {
-        $param['admin_role_id'] = input('admin_role_id/d', '');
-        $param['admin_user_id'] = input('admin_user_id/d', '');
+        $param['role_id'] = input('role_id/d', '');
+        $param['user_id'] = input('user_id/d', '');
 
         validate(RoleValidate::class)->scene('id')->check($param);
         validate(UserValidate::class)->scene('id')->check($param);

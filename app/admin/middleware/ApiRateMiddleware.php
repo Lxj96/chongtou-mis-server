@@ -10,7 +10,6 @@ namespace app\admin\middleware;
 
 use app\common\exception\FrequentException;
 use Closure;
-use think\Exception;
 use think\Request;
 use think\Response;
 use app\common\cache\admin\ApiRateCache;
@@ -33,7 +32,7 @@ class ApiRateMiddleware
         $api_rate_time = $setting['api_rate_time'];
 
         if ($api_rate_num > 0 && $api_rate_time > 0) {
-            $admin_user_id = admin_user_id();
+            $admin_user_id = user_id();
             $menu_url = menu_url();
 
             if ($admin_user_id && $menu_url) {

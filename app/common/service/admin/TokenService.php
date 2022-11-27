@@ -41,7 +41,7 @@ class TokenService
         $exp = time() + $config['token_exp'] * 3600;  //过期时间
 
         $data = [
-            'admin_user_id' => $user['admin_user_id'],
+            'user_id' => $user['user_id'],
             'login_time' => $user['login_time'],
             'login_ip' => $user['login_ip'],
         ];
@@ -70,12 +70,12 @@ class TokenService
         try {
             $config = self::config();
             $decode = JWT::decode($token, $config['token_key'], array('HS256'));
-            $admin_user_id = $decode->data->admin_user_id;
+            $user_id = $decode->data->user_id;
         } catch (\Exception $e) {
             throw new AuthException('账号登录状态已过期');
         }
 
-        $user = UserCache::get($admin_user_id);
+        $user = UserCache::get($user_id);
 
         if (empty($user)) {
             throw new AuthException('登录已失效，请重新登录');
@@ -102,7 +102,7 @@ class TokenService
      *
      * @return int admin_user_id
      */
-    public static function adminUserId($token)
+    public static function userId($token)
     {
         if (empty($token)) {
             return 0;
@@ -111,11 +111,11 @@ class TokenService
         try {
             $config = self::config();
             $decode = JWT::decode($token, $config['token_key'], array('HS256'));
-            $admin_user_id = $decode->data->admin_user_id;
+            $user_id = $decode->data->user_id;
         } catch (\Exception $e) {
-            $admin_user_id = 0;
+            $user_id = 0;
         }
 
-        return $admin_user_id;
+        return $user_id;
     }
 }

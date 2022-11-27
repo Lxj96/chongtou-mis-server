@@ -60,6 +60,21 @@ function error($data = [], $msg = '操作失败', $code = 400)
 }
 
 /**
+ * 格式化前台传入的每页记录数，返回tp需要的排序规则
+ *
+ * @param $pageSize integer 排序规则
+ * @return integer
+ */
+function format_page_size($pageSize)
+{
+    if (empty($pageSize)) {
+        return 10;
+    }
+
+    return $pageSize;
+}
+
+/**
  * 格式化前台传入的排序字段，返回tp需要的排序规则
  *
  * @param $order array 排序规则
@@ -67,12 +82,35 @@ function error($data = [], $msg = '操作失败', $code = 400)
  */
 function format_sort($order)
 {
-    $arr = json_decode($order, true);
-    foreach ($arr as $key => $val) {
-        $arr[$key] = $val === 'ascending' ? 'asc' : 'desc';
+    if (!empty($order)) {
+        $arr = json_decode($order, true);
+        foreach ($arr as $key => $val) {
+            $arr[$key] = $val === 'ascending' ? 'asc' : 'desc';
+        }
     }
 
-    return $arr;
+    return $arr ?? [];
+}
+
+/**
+ * 菜单url获取
+ * 应用/控制器/操作
+ *
+ * @return string eg：admin/Index/index
+ */
+function menu_url()
+{
+    $url = app('http')->getName() . '/' . Request::pathinfo();
+    // 删除最后一个/
+    $reg = '/\/$/i';
+    $url = preg_replace($reg, '', $url);
+    // 自动补index
+    if (substr_count($url, '/') == 1) {
+        $url = $url . '/index';
+    }
+
+//    return app('http')->getName() . '/' . Request::controller() . '/' . Request::action();
+    return $url;
 }
 
 /**
@@ -295,4 +333,29 @@ function getCascaderAllByID($pid, $cascaderData, $field = 'id', $pfield = 'pid',
     }
 
     return $cascaderIDs;
+}
+
+/**
+ * 在数组中查找并返回键值
+ * @param $value string 查找的值
+ * @param $arr array  数组
+ * @param $search_all boolean 是否查找所有
+ * @return mixed
+ */
+function search_array_key($value, $arr, $search_all = false)
+{
+    // 二维数组
+    if (count($arr) != count($arr, 1)) {
+        $keys = [];
+        foreach ($arr as $key => $val) {
+            $key = array_search($value, $val);
+            if (!$search_all) return $key;
+            elseif ($key) $keys[] = $key;
+        }
+        return empty($keys) ? false : $keys;
+    }
+    else {
+        return array_search($value, $arr);
+    }
+
 }

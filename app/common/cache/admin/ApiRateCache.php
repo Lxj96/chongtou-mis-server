@@ -25,7 +25,7 @@ class ApiRateCache
         return 'admin_apirate:' . $admin_user_id . ':' . $menu_url;
     }
 
-    /**
+    /**ç
      * 缓存设置
      *
      * @param int $admin_user_id 用户id
@@ -36,7 +36,7 @@ class ApiRateCache
      */
     public static function set($admin_user_id, $menu_url, $ttl = 60)
     {
-        return Cache::set(self::key($admin_user_id, $menu_url), 1, $ttl);
+        return Cache::tag('admin')->set(self::key($admin_user_id, $menu_url), 1, $ttl);
     }
 
     /**

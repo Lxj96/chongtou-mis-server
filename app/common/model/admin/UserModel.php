@@ -14,9 +14,7 @@ class UserModel extends BaseModel
 {
     // 表名
     protected $name = 'admin_user';
-    // 表主键
-    protected $pk = 'admin_user_id';
-
+    protected $pk = 'user_id';
     protected $type = [
         'is_disable' => 'boolean',
         'is_super' => 'boolean',
