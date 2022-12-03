@@ -20,6 +20,7 @@ class ProjectValidate extends Validate
         'village_id' => ['require', 'integer'],
         'name' => ['require'],
         'address' => ['require'],
+        'status' => ['require', 'in:0,1,2'],
     ];
 
     // 错误信息
@@ -27,14 +28,15 @@ class ProjectValidate extends Validate
         'village_id' => '请选择所属行政村',
         'name' => '请输入项目名称',
         'address' => '请输入项目地址',
+        'status' => '请选择项目状态',
     ];
 
     // 验证场景
     protected $scene = [
         'id' => ['id'],
         'info' => ['id'],
-        'add' => ['village_id', 'name', 'address'],
-        'edit' => ['id', 'village_id', 'name', 'address'],
+        'add' => ['village_id', 'name', 'address', 'status'],
+        'edit' => ['id', 'village_id', 'name', 'address', 'status'],
         'del' => ['ids'],
     ];
 }

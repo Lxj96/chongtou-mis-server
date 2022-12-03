@@ -31,7 +31,7 @@ class TeamService
         $model = new TeamModel();
 
         if (empty($field)) {
-            $field = 'id,village_id,name,job,phone,remark,create_time,update_time';
+            $field = 'id,village_id,team_name,name,job,phone,remark,create_time,update_time';
         }
 
         if (empty($order)) {

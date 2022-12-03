@@ -31,7 +31,7 @@ class ProjectService
         $model = new ProjectModel();
 
         if (empty($field)) {
-            $field = 'id,village_id,name,address,construction,scale,content,remark,create_time,update_time';
+            $field = 'id,village_id,name,address,construction,scale,content,status,remark,create_time,update_time';
         }
 
         if (empty($order)) {

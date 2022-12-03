@@ -41,6 +41,7 @@ class Personnel
         // 检索字段
         $village_id = input('village_id/d', 0);
         $sex = input('sex/d', 0);
+        $category = input('category/d', 0);
         $age = input('age/d', 0);
         $is_often = input('is_often/b');
         $is_alone = input('is_alone/b');
@@ -52,6 +53,7 @@ class Personnel
         $where = [];
         if (!empty($village_id)) $where[] = ['village_id', '=', $village_id];
         if (!empty($sex)) $where[] = ['sex', '=', $sex];
+        if (!empty($category)) $where[] = ['category', '=', $category];
         if (!empty($age)) {
             if ($age === 1) {
                 $where[] = ['', 'exp', Db::raw('TIMESTAMPDIFF( YEAR, birthday, CURDATE()) < 60')];
@@ -115,7 +117,7 @@ class Personnel
         $param['migrate_time'] = input('migrate_time/s', null);
         $param['migrate_reason'] = input('migrate_reason/s', '');
         $param['job'] = input('job/s', '');
-        $param['category'] = input('category/s', '');
+        $param['category'] = input('category/d', 0);
         $param['come_time'] = input('come_time/s', null);
         $param['come_reason'] = input('come_reason/s', '');
         $param['is_lock'] = input('is_lock/b', true);
@@ -158,7 +160,7 @@ class Personnel
         $param['migrate_time'] = input('migrate_time/s', null);
         $param['migrate_reason'] = input('migrate_reason/s', '');
         $param['job'] = input('job/s', '');
-        $param['category'] = input('category/s', '');
+        $param['category'] = input('category/d', 0);
         $param['come_time'] = input('come_time/s', null);
         $param['come_reason'] = input('come_reason/s', '');
         $param['is_lock'] = input('is_lock/b', true);
@@ -195,7 +197,8 @@ class Personnel
      * 修改供暖方式
      * @return Json
      */
-    public function heating(){
+    public function heating()
+    {
         $param['id'] = input('id/d', 0);
         $param['heating'] = input('heating/s', '');
         $param['life'] = input('life/s', '');

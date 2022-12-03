@@ -88,7 +88,7 @@ class Industry
         $param['bed'] = input('bed/s', '');
         $param['dining_table'] = input('dining_table/s', '');
         $param['toilet'] = input('toilet/s', '');
-        $param['star'] = input('star/s', '');
+        $param['star'] = input('star/d', 0);
         $param['standard'] = input('standard/s', '');
         $param['license_time'] = input('license_time/s', null);
         $param['license_address'] = input('license_address/s', null);
@@ -118,7 +118,7 @@ class Industry
         $param['bed'] = input('bed/s', '');
         $param['dining_table'] = input('dining_table/s', '');
         $param['toilet'] = input('toilet/s', '');
-        $param['star'] = input('star/s', '');
+        $param['star'] = input('star/d', 0);
         $param['standard'] = input('standard/s', '');
         $param['license_time'] = input('license_time/s', null);
         $param['license_address'] = input('license_address/s', null);

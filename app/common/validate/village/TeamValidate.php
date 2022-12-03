@@ -18,6 +18,7 @@ class TeamValidate extends Validate
         'ids' => ['require', 'array'],
         'id' => ['require', 'integer'],
         'village_id' => ['require', 'integer'],
+        'team_name' => ['require'],
         'name' => ['require'],
         'job' => ['require'],
         'phone' => ['require', 'mobile'],
@@ -26,6 +27,7 @@ class TeamValidate extends Validate
     // 错误信息
     protected $message = [
         'village_id' => '请选择所属行政村',
+        'team_name' => '请输入队伍名称',
         'name' => '请输入姓名',
         'job' => '请输入工作',
         'phone' => '请输入正确的联系电话',
@@ -35,8 +37,8 @@ class TeamValidate extends Validate
     protected $scene = [
         'id' => ['id'],
         'info' => ['id'],
-        'add' => ['village_id', 'name', 'job', 'phone'],
-        'edit' => ['id', 'village_id', 'name', 'job', 'phone'],
+        'add' => ['village_id', 'team_name', 'name', 'job', 'phone'],
+        'edit' => ['id', 'village_id', 'team_name', 'name', 'job', 'phone'],
         'del' => ['ids'],
     ];
 }

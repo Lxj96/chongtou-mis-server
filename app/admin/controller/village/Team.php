@@ -39,10 +39,12 @@ class Team
         $order = input('sort/a', [], 'format_sort');
         // 检索字段
         $village_id = input('village_id/d', 0);
+        $team_name = input('team_name/s', '');
         $search_words = input('search_words/s', '');
         // 构建查询条件
         $where = [];
         if (!empty($village_id)) $where[] = ['village_id', '=', $village_id];
+        if (!empty($team_name)) $where[] = ['team_name', 'like', '%' . $team_name . '%'];
         if (!empty($search_words)) $where[] = ['name|job', 'like', '%' . $search_words . '%'];
 
         $data = TeamService::list($where, $current, $pageSize, $order);
@@ -75,6 +77,7 @@ class Team
     public function save()
     {
         $param['village_id'] = input('village_id/d', 0);
+        $param['team_name'] = input('team_name/s', '');
         $param['name'] = input('name/s', '');
         $param['job'] = input('job/s', '');
         $param['phone'] = input('phone/s', '');
@@ -95,6 +98,7 @@ class Team
     {
         $param['id'] = input('id/d', 0);
         $param['village_id'] = input('village_id/d', 0);
+        $param['team_name'] = input('team_name/s', '');
         $param['name'] = input('name/s', '');
         $param['job'] = input('job/s', '');
         $param['phone'] = input('phone/s', '');

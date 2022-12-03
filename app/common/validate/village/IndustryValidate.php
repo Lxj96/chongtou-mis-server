@@ -22,6 +22,7 @@ class IndustryValidate extends Validate
         'address' => ['require'],
         'owner' => ['require'],
         'phone' => ['require', 'mobile'],
+        'star' => ['integer'],
         'license_time' => ['date']
     ];
 
@@ -38,8 +39,8 @@ class IndustryValidate extends Validate
     protected $scene = [
         'id' => ['id'],
         'info' => ['id'],
-        'add' => ['village_id', 'name', 'address', 'owner', 'phone'],
-        'edit' => ['id', 'village_id', 'name', 'address', 'owner', 'phone'],
+        'add' => ['village_id', 'name', 'address', 'owner', 'phone', 'star'],
+        'edit' => ['id', 'village_id', 'name', 'address', 'owner', 'phone', 'star'],
         'del' => ['ids'],
     ];
 }

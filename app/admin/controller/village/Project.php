@@ -39,10 +39,12 @@ class Project
         $order = input('sort/a', [], 'format_sort');
         // 检索字段
         $village_id = input('village_id/d', 0);
+        $status = input('status/d', 0);
         $search_words = input('search_words/s', '');
         // 构建查询条件
         $where = [];
         if (!empty($village_id)) $where[] = ['village_id', '=', $village_id];
+        if (!empty($status)) $where[] = ['status', '=', $status];
         if (!empty($search_words)) $where[] = ['name|address|construction', 'like', '%' . $search_words . '%'];
 
         $data = ProjectService::list($where, $current, $pageSize, $order);
@@ -80,6 +82,7 @@ class Project
         $param['construction'] = input('construction/s', '');
         $param['scale'] = input('scale/s', '');
         $param['content'] = input('content/s', '');
+        $param['status'] = input('status/d', 1);
         $param['remark'] = input('remark/s', '');
 
         validate(ProjectValidate::class)->scene('add')->check($param);
@@ -102,6 +105,7 @@ class Project
         $param['construction'] = input('construction/s', '');
         $param['scale'] = input('scale/s', '');
         $param['content'] = input('content/s', '');
+        $param['status'] = input('status/d', 1);
         $param['remark'] = input('remark/s', '');
 
         validate(ProjectValidate::class)->scene('edit')->check($param);
