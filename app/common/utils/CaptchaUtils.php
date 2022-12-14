@@ -158,7 +158,7 @@ class CaptchaUtils
             $y = self::$fontSize + mt_rand(10, 20);
             $angle = self::$math ? 0 : mt_rand(-40, 40);
             putenv('GDFONTPATH=' . realpath('.'));
-            imagettftext(self::$im, self::$fontSize, $angle, $x, $y, self::$color, $fontttf, $char);
+            imagettftext(self::$im, self::$fontSize, $angle, $x, $y, self::$color, realpath($fontttf), $char);
         }
 
         ob_start();
