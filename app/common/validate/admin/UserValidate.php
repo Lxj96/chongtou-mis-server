@@ -48,6 +48,7 @@ class UserValidate extends Validate
         'pwd' => ['ids', 'password'],
         'super' => ['ids'],
         'disable' => ['ids'],
+        'showIdcard' => ['ids'],
         'rule' => ['user_id'],
     ];
 

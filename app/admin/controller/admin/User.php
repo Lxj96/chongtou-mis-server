@@ -210,4 +210,20 @@ class User
 
         return success($data);
     }
+
+    /**
+     * 用户是否允许查看身份证
+     * @return Json
+     */
+    public function showIdcard()
+    {
+        $param['ids'] = input('ids/a', []);
+        $param['is_show_idcard'] = input('is_show_idcard/b', false);
+
+        validate(UserValidate::class)->scene('showIdcard')->check($param);
+
+        $data = UserService::showIdcard($param['ids'], $param['is_show_idcard']);
+
+        return success($data);
+    }
 }

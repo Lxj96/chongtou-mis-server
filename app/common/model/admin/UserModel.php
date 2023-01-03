@@ -18,5 +18,6 @@ class UserModel extends BaseModel
     protected $type = [
         'is_disable' => 'boolean',
         'is_super' => 'boolean',
+        'is_show_idcard' => 'boolean',
     ];
 }

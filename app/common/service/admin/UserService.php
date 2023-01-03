@@ -38,7 +38,7 @@ class UserService
         $pk = $model->getPk();
 
         if (empty($field)) {
-            $field = $pk . ',username,nickname,phone,email,avatar_id,sort,is_disable,is_super,login_num,create_time,login_time';
+            $field = $pk . ',username,nickname,phone,email,avatar_id,sort,is_disable,is_super,is_show_idcard,login_num,create_time,login_time';
         }
 
         if (empty($order)) {
@@ -444,6 +444,38 @@ class UserService
         $pk = $model->getPk();
 
         $update['is_disable'] = $is_disable;
+        $update['update_time'] = datetime();
+
+        $res = $model->where($pk, 'in', $ids)->update($update);
+        if (empty($res)) {
+            throw new SaveErrorMessage();
+        }
+
+        foreach ($ids as $v) {
+            UserCache::upd($v);
+        }
+
+        $update['ids'] = $ids;
+
+        return $update;
+    }
+
+    /**
+     * 用户是否允许查看身份证
+     *
+     * @param array $ids 用户id
+     * @param int $is_show_idcard 是否允许查看身份证
+     *
+     * @return array
+     * @throws AuthException
+     * @throws SaveErrorMessage
+     */
+    public static function showIdcard($ids, $is_show_idcard)
+    {
+        $model = new UserModel();
+        $pk = $model->getPk();
+
+        $update['is_show_idcard'] = $is_show_idcard;
         $update['update_time'] = datetime();
 
         $res = $model->where($pk, 'in', $ids)->update($update);
