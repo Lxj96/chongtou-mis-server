@@ -56,6 +56,7 @@ class File
         $param['flag'] = input('flag/d', 0);
         $param['group_pid'] = input('group_pid/d', 0);
         $param['group_name'] = input('group_name/s', '');
+        $param['power_grade'] = input('power_grade/d', 1);
         $param['group_sort'] = input('group_sort/d', 250);
 
         validate(FileValidate::class)->scene('groupadd')->check($param);
@@ -74,6 +75,7 @@ class File
         $param['flag'] = input('flag/d', 0);
         $param['group_pid'] = input('group_pid/d', 0);
         $param['group_name'] = input('group_name/s', '');
+        $param['power_grade'] = input('power_grade/d', 1);
         $param['group_sort'] = input('group_sort/d', 250);
 
         validate(FileValidate::class)->scene('groupedit')->check($param);

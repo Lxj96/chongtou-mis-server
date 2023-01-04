@@ -38,7 +38,7 @@ class UserService
         $pk = $model->getPk();
 
         if (empty($field)) {
-            $field = $pk . ',username,nickname,phone,email,avatar_id,sort,is_disable,is_super,is_show_idcard,login_num,create_time,login_time';
+            $field = $pk . ',username,nickname,phone,email,avatar_id,power_grade,sort,is_disable,is_super,is_show_idcard,login_num,create_time,login_time';
         }
 
         if (empty($order)) {

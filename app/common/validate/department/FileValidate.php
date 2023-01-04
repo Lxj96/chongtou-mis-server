@@ -21,6 +21,7 @@ class FileValidate extends Validate
         'group_pid' => ['require', 'integer'],
         'group_id' => ['require', 'integer', 'gt:0'],
         'group_name' => ['require'],
+        'power_grade' => ['require', 'integer', 'between:1,5'],
         'file' => ['require', 'file', 'checkLimit'],
         'file_id' => ['require'],
         'file_type' => ['require'],
@@ -38,8 +39,8 @@ class FileValidate extends Validate
     protected $scene = [
         'id' => ['file_id'],
         'group' => ['flag'],
-        'groupadd' => ['flag', 'group_pid', 'group_name'],
-        'groupedit' => ['group_id', 'flag', 'group_pid', 'group_name'],
+        'groupadd' => ['flag', 'group_pid', 'group_name', 'power_grade'],
+        'groupedit' => ['group_id', 'flag', 'group_pid', 'group_name', 'power_grade'],
         'groupinfo' => ['flag', 'group_id'],
         'groupdisable' => ['flag', 'group_id'],
         'list' => ['group_id'],

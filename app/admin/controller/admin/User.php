@@ -90,6 +90,7 @@ class User
         $param['avatar_id'] = input('avatar_id/d', 0);
         $param['username'] = input('username/s', '');
         $param['nickname'] = input('nickname/s', '');
+        $param['power_grade'] = input('power_grade/d', 1);
         $param['password'] = input('password/s', '');
         $param['email'] = input('email/s', '');
         $param['phone'] = input('phone/s', '');
@@ -113,6 +114,7 @@ class User
         $param['avatar_id'] = input('avatar_id/d', 0);
         $param['username'] = input('username/s', '');
         $param['nickname'] = input('nickname/s', '');
+        $param['power_grade'] = input('power_grade/d', 1);
         $param['email'] = input('email/s', '');
         $param['phone'] = input('phone/s', '');
         $param['remark'] = input('remark/s', '');

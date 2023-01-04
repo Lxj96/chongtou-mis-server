@@ -6,6 +6,7 @@
  * DateTime: 2021-08-17 10:55
  */
 
+use app\common\service\admin\UserService;
 use think\facade\Config;
 use think\facade\Request;
 use app\common\service\admin\MenuService;
@@ -169,6 +170,18 @@ function user_id()
 {
     return TokenService::userId(get_token());
 }
+
+/**
+ * 用户文件权限等级获取
+ *
+ * @return int
+ */
+function user_power_grade()
+{
+    $user = UserService::info(user_id());
+    return $user['power_grade'];
+}
+
 
 /**
  * 用户是否超管

@@ -51,8 +51,8 @@ class FileService
             $where[] = [$date_field, '<=', $date_value[1] . ' 23:59:59'];
         }
         if (!empty($group_id)) {
-            $group_ids = self::getSubordinate([$group_id], $group_id);
-            $where[] = ['group_id', 'in', $group_ids];
+//            $group_ids = self::getSubordinate([$group_id], $group_id);
+            $where[] = ['group_id', 'in', $group_id];
         }
         if (!empty($file_type)) $where[] = ['file_type', '=', $file_type];
         if (is_bool($is_disable)) $where[] = ['is_disable', '=', $is_disable];
@@ -277,12 +277,15 @@ class FileService
      */
     public static function group($flag)
     {
-        $data = FileGroupCache::get('flag' . $flag);
+        // 用户文件权限等级
+        $power_grade = user_power_grade();
+        $data = FileGroupCache::get('flag' . $flag . '_' . $power_grade);
         if (empty($data)) {
             $model = new FileGroupModel();
             $where = [
                 ['flag', '=', $flag],
-                ['is_disable', '=', 0]
+                ['is_disable', '=', 0],
+                ['power_grade', '<=', $power_grade]
             ];
             $field = 'group_id,group_name,group_pid,group_sort,is_disable';
 
@@ -292,7 +295,7 @@ class FileService
 
             $data = self::toTree($data, 0);
 
-            FileGroupCache::set('flag' . $flag, $data);
+            FileGroupCache::set('flag' . $flag . '_' . $power_grade, $data);
         }
 
         return ['list' => $data];
@@ -353,7 +356,10 @@ class FileService
 
         $param['id'] = $id;
 
-        FileGroupCache::del('flag' . $param['flag']);
+        for ($i = 1; $i < 6; $i++) {
+            FileGroupCache::del('flag' . $param['flag'] . '_' . $i);
+        }
+
         return $param;
     }
 
@@ -379,7 +385,9 @@ class FileService
             throw new SaveErrorMessage();
         }
 
-        FileGroupCache::del('flag' . $param['flag']);
+        for ($i = 1; $i < 6; $i++) {
+            FileGroupCache::del('flag' . $param['flag'] . '_' . $i);
+        }
         FileGroupCache::del($id);
 
         $param['group_id'] = $id;
@@ -416,7 +424,9 @@ class FileService
             throw new SaveErrorMessage();
         }
 
-        FileGroupCache::del('flag' . $flag);
+        for ($i = 1; $i < 6; $i++) {
+            FileGroupCache::del('flag' . $flag . '_' . $i);
+        }
         foreach ($ids as $val) {
             FileGroupCache::del($val);
         }
