@@ -291,4 +291,21 @@ class File
 
         return success($data);
     }
+
+    /**
+     * 文件下载
+     */
+    public function downLog()
+    {
+        $param['flag'] = input('flag/s', '');
+        $param['file_name'] = input('file_name/s', '');
+        $param['file_path'] = input('file_path/s', '');
+        $param['file_id'] = input('file_id/d', 0);
+
+        validate(FileValidate::class)->scene('log')->check($param);
+
+        $data = FileService::log($param);
+
+        return success($data);
+    }
 }

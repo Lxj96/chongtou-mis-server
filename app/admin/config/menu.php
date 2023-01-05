@@ -13,13 +13,14 @@ return [
     'menu_is_unlogin' => [
         'admin/admin.Login/setting',
         'admin/admin.Login/captcha',
-        'admin/admin.Login/login'
+        'admin/admin.Login/login',
     ],
     // 无需权限菜单url
     'menu_is_unauth' => [
         'admin/Index/index',
         'admin/admin.Login/logout',
-        'admin/admin.UserCenter/info'
+        'admin/admin.UserCenter/info',
+        'admin/file.File/downLog',
     ],
     // 无需限率菜单url
     'menu_is_unrate' => [

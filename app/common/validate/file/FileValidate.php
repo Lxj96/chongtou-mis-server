@@ -19,6 +19,9 @@ class FileValidate extends Validate
         'file' => ['require', 'file', 'checkLimit'],
         'file_id' => ['require'],
         'file_type' => ['require'],
+        'file_name' => ['require'],
+        'file_path' => ['require'],
+        'flag' => ['require'],
         'group_id' => ['require'],
     ];
 
@@ -42,6 +45,7 @@ class FileValidate extends Validate
         'edittype' => ['ids', 'file_type'],
         'editdomain' => ['ids'],
         'reco' => ['ids'],
+        'log' => ['flag', 'file_id', 'file_name', 'file_path'],
     ];
 
     // 自定义验证规则：上传限制

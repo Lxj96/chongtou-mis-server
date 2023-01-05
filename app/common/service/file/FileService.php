@@ -11,6 +11,7 @@ namespace app\common\service\file;
 use app\common\cache\file\FileCache;
 use app\common\exception\SaveErrorMessage;
 use app\common\exception\UploadErrorException;
+use app\common\model\file\FileLogModel;
 use app\common\model\file\FileModel;
 use app\common\model\file\GroupModel;
 use think\facade\Db;
@@ -497,5 +498,26 @@ class FileService
         }
 
         return $data;
+    }
+
+    /**
+     * 文件下载日志
+     */
+    public static function log($param)
+    {
+        $param['user_id'] = user_id();
+
+        $model = new FileLogModel();
+
+        $param['create_time'] = datetime();
+
+        $id = $model->insertGetId($param);
+        if (empty($id)) {
+            throw new SaveErrorMessage();
+        }
+
+        $param['id'] = $id;
+
+        return $param;
     }
 }
