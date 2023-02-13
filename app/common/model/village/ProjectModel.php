@@ -15,4 +15,16 @@ class ProjectModel extends BaseModel
 {
     // 表名
     protected $name = 'village_project';
+    protected $type = [
+        'start_time' => 'timestamp:Y-m-d',
+        'end_time' => 'timestamp:Y-m-d',
+    ];
+
+    /**
+     * 关联File模型
+     */
+    public function file()
+    {
+        return $this->hasOne('app\common\model\file\FileModel', 'file_id', 'file_id');
+    }
 }

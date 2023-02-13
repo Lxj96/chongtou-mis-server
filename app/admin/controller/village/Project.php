@@ -78,11 +78,16 @@ class Project
     {
         $param['village_id'] = input('village_id/d', 0);
         $param['name'] = input('name/s', '');
+        $param['start_time'] = input('start_time/s', '');
+        $param['end_time'] = input('end_time/s', '');
+        $param['liaison'] = input('liaison/s', '');
+        $param['phone'] = input('phone/s', '');
         $param['address'] = input('address/s', '');
         $param['construction'] = input('construction/s', '');
         $param['scale'] = input('scale/s', '');
         $param['content'] = input('content/s', '');
         $param['status'] = input('status/d', 1);
+        $param['file_id'] = input('file_id/d', null);
         $param['remark'] = input('remark/s', '');
 
         validate(ProjectValidate::class)->scene('add')->check($param);
@@ -101,11 +106,16 @@ class Project
         $param['id'] = input('id/d', 0);
         $param['village_id'] = input('village_id/d', 0);
         $param['name'] = input('name/s', '');
+        $param['start_time'] = input('start_time/s', '');
+        $param['end_time'] = input('end_time/s', '');
+        $param['liaison'] = input('liaison/s', '');
+        $param['phone'] = input('phone/s', '');
         $param['address'] = input('address/s', '');
         $param['construction'] = input('construction/s', '');
         $param['scale'] = input('scale/s', '');
         $param['content'] = input('content/s', '');
         $param['status'] = input('status/d', 1);
+        $param['file_id'] = input('file_id/d', null);
         $param['remark'] = input('remark/s', '');
 
         validate(ProjectValidate::class)->scene('edit')->check($param);

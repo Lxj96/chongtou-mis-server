@@ -12,6 +12,7 @@ namespace app\common\service\village;
 use app\common\exception\MissException;
 use app\common\exception\SaveErrorMessage;
 use app\common\model\village\ProjectModel;
+use app\common\service\file\FileService;
 
 class ProjectService
 {
@@ -31,7 +32,7 @@ class ProjectService
         $model = new ProjectModel();
 
         if (empty($field)) {
-            $field = 'id,village_id,name,address,construction,scale,content,status,remark,create_time,update_time';
+            $field = 'id,village_id,name,start_time,end_time,liaison,phone,address,construction,scale,content,status,remark,file_id,create_time,update_time';
         }
 
         if (empty($order)) {
@@ -52,6 +53,8 @@ class ProjectService
                     $list[$k]['village_name'] = $village['village_name'];
                 }
             }
+            $list[$k]['file'] = FileService::info($v['file_id']);
+
         }
 
         return compact('total', 'pages', 'current', 'pageSize', 'list');
@@ -71,7 +74,11 @@ class ProjectService
         if (empty($info)) {
             throw new MissException();
         }
+
         $info = $info->toArray();
+        if (!empty($info['file_id'])) {
+            $info['file'] = FileService::info($info['file_id']);
+        }
 
         return $info;
     }
@@ -90,7 +97,7 @@ class ProjectService
 
         $param['create_time'] = datetime();
 
-        $id = $model->insertGetId($param);
+        $id = $model->save($param);
         if (empty($id)) {
             throw new SaveErrorMessage();
         }
@@ -115,16 +122,22 @@ class ProjectService
         $id = $param['id'];
         unset($param['id']);
 
+        $info = $model->find($id);
+        if (!$info) {
+            throw new MissException();
+        }
+
         $param['update_time'] = datetime();
 
-        $res = $model->where('id', $id)->update($param);
-        if (empty($res)) {
+        try {
+            $info->save($param);
+        } catch (\Exception $e) {
             throw new SaveErrorMessage();
         }
 
         $param['id'] = $id;
 
-        return $param;
+        return $info->toArray();
     }
 
     /**

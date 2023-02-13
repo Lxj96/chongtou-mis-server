@@ -19,8 +19,12 @@ class ProjectValidate extends Validate
         'id' => ['require', 'integer'],
         'village_id' => ['require', 'integer'],
         'name' => ['require'],
+        'start_time' => ['date'],
+        'end_time' => ['date'],
+        'phone' => ['mobile'],
         'address' => ['require'],
         'status' => ['require', 'in:0,1,2'],
+        'file_id' => ['integer'],
     ];
 
     // 错误信息
@@ -35,8 +39,8 @@ class ProjectValidate extends Validate
     protected $scene = [
         'id' => ['id'],
         'info' => ['id'],
-        'add' => ['village_id', 'name', 'address', 'status'],
-        'edit' => ['id', 'village_id', 'name', 'address', 'status'],
+        'add' => ['village_id', 'name', 'start_time', 'end_time', 'liaison', 'phone', 'address', 'status', 'file_id',],
+        'edit' => ['id', 'village_id', 'name', 'start_time', 'end_time', 'liaison', 'phone', 'address', 'status', 'file_id'],
         'del' => ['ids'],
     ];
 }

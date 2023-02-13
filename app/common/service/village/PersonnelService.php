@@ -13,6 +13,7 @@ use app\common\cache\village\PersonnelCache;
 use app\common\exception\MissException;
 use app\common\exception\SaveErrorMessage;
 use app\common\model\village\PersonnelModel;
+use app\common\service\admin\UserService;
 
 class PersonnelService
 {
@@ -37,6 +38,7 @@ class PersonnelService
                 'village_id',
                 'name',
                 'sex',
+                'phone',
                 'idcard',
                 'birthday',
                 'nationality',
@@ -59,6 +61,8 @@ class PersonnelService
 
         $list = $model->field($field)->where($where)->page($current)->limit($pageSize)->order($order)->select()->toArray();
 
+        $userInfo = UserService::info(user_id());
+        $is_show_idcard = $userInfo['is_show_idcard']; // 是否可查看完整身份证
         foreach ($list as $k => $v) {
             $list[$k]['village_name'] = '';
             if (!empty($v['village_id'])) {
@@ -66,6 +70,10 @@ class PersonnelService
                 if ($village) {
                     $list[$k]['village_name'] = $village['village_name'];
                 }
+            }
+            if (!$is_show_idcard) {
+                $list[$k]['phone'] = substr_replace($v['phone'], '****', 3, 4);
+                $list[$k]['idcard'] = substr_replace($v['idcard'], '****', 6, 10);
             }
         }
 

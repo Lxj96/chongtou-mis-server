@@ -45,15 +45,21 @@ class FileService
         $where = [
             ['flag', '=', $flag]
         ];
-        if (!empty($search_words)) $where[] = ['file_name', 'like', '%' . $search_words . '%'];
+        if (!empty($search_words)) {
+            $group_ids = self::getGroupIds(self::group($flag)['list']);
+            $where[] = ['file_name', 'like', '%' . $search_words . '%'];
+            $where[] = ['group_id', 'in', $group_ids];
+        }
+        elseif (!empty($group_id)) {
+            //            $group_ids = self::getSubordinate([$group_id], $group_id);
+            $where[] = ['group_id', 'in', $group_id];
+        }
+
         if ($date_field && !empty($date_value)) {
             $where[] = [$date_field, '>=', $date_value[0] . ' 00:00:00'];
             $where[] = [$date_field, '<=', $date_value[1] . ' 23:59:59'];
         }
-        if (!empty($group_id)) {
-//            $group_ids = self::getSubordinate([$group_id], $group_id);
-            $where[] = ['group_id', 'in', $group_id];
-        }
+
         if (!empty($file_type)) $where[] = ['file_type', '=', $file_type];
         if (is_bool($is_disable)) $where[] = ['is_disable', '=', $is_disable];
 
@@ -74,7 +80,10 @@ class FileService
         $pages = ceil($total / $pageSize);
 
         $list = $model->field($field)
-            ->append(['file_url'])
+            ->withAttr(['file_full_name' => function ($value, $data) {
+                return $data['file_name'] . '.' . $data['file_ext'];
+            }])
+            ->append(['file_url', 'file_full_name'])
             ->where($where)
             ->page($current)
             ->limit($pageSize)
@@ -82,9 +91,9 @@ class FileService
             ->select()
             ->toArray();
 
-        $ids = array_column($list, $pk);
+//        $ids = array_column($list, $pk);
 
-        return compact('total', 'pages', 'current', 'pageSize', 'list', 'ids');
+        return compact('total', 'pages', 'current', 'pageSize', 'list');
     }
 
     /**
@@ -486,5 +495,20 @@ class FileService
         }
 
         return $tree;
+    }
+
+    /**
+     * 从tree结构数组中获取所有group_id
+     */
+    private static function getGroupIds($data)
+    {
+        $groupIds = array();
+        foreach ($data as $item) {
+            $groupIds[] = $item['group_id'];
+            if (isset($item['children'])) {
+                $groupIds = array_merge($groupIds, self::getGroupIds($item['children']));
+            }
+        }
+        return $groupIds;
     }
 }
