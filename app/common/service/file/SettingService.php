@@ -201,7 +201,7 @@ class SettingService
             'aiff', 'midi', 'ra', 'rmx', 'vqf', 'amr'
         ];
         $word_ext = [
-            'doc', 'docx', 'docm', 'dotx', 'dotm', 'txt',
+            'doc', 'docx', 'docm', 'dotx', 'dotm', 'txt', 'pdf',
             'xls', 'xlsx', 'xlsm', 'xltx', 'xltm', 'xlsb', 'xlam', 'csv',
             'ppt', 'pptx', 'potx', 'potm', 'ppam', 'ppsx', 'ppsm', 'sldx', 'sldm', 'thmx'
         ];

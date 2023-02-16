@@ -17,6 +17,7 @@ use app\common\model\currency\FileGroupModel;
 use app\common\model\currency\FileModel;
 use app\common\service\file\SettingService;
 use app\common\service\file\StorageService;
+use think\facade\Db;
 use think\facade\Filesystem;
 
 class FileService
@@ -47,7 +48,8 @@ class FileService
         ];
         if (!empty($search_words)) {
             $group_ids = self::getGroupIds(self::group($flag)['list']);
-            $where[] = ['file_name', 'like', '%' . $search_words . '%'];
+//            $where[] = ['file_name', 'like', '%' . $search_words . '%'];
+            $where[] = ['', 'exp', Db::raw('MATCH ( file_name ) against (\'' . $search_words . '\')')];
             $where[] = ['group_id', 'in', $group_ids];
         }
         elseif (!empty($group_id)) {
@@ -72,7 +74,7 @@ class FileService
         $field = $pk . ',' . $GroupPk . ',storage,domain,file_md5,file_hash,file_type,file_name,file_path,file_size,file_ext,sort,is_disable';
 
         if (empty($order)) {
-            $order = ['update_time' => 'desc', 'sort' => 'desc', $pk => 'desc'];
+            $order = ['sort' => 'asc', $pk => 'desc'];
         }
 
         $total = $model->where($where)->count($pk);
@@ -277,6 +279,29 @@ class FileService
         $update['ids'] = $ids;
 
         return $update;
+    }
+
+    /**
+     * 文件调整排序
+     *
+     * @param array $data
+     */
+    public static function updateSort($data)
+    {
+        $model = new FileModel();
+
+        foreach ($data as $key => $val) {
+            $data[$key]['sort'] = $val['sort'] * 10;
+            $data[$key]['update_time'] = datetime();
+        }
+
+        try {
+            $model->saveAll($data);
+        } catch (\Exception $e) {
+            throw new SaveErrorMessage();
+        }
+
+        return $data;
     }
 
     /**

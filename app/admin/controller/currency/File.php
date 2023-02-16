@@ -212,4 +212,17 @@ class File
 
         return success($data);
     }
+
+    /**
+     * 文件修改排序
+     */
+    public function updateSort()
+    {
+        $param['data'] = input('data/a', []);
+
+        $data = FileService::updateSort($param['data']);
+
+        return success();
+
+    }
 }
