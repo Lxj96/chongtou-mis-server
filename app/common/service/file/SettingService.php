@@ -117,22 +117,22 @@ class SettingService
                 'label' => '本地(服务器)',
                 'value' => 'local'
             ],
-//            [
-//                'label' => '七牛云Kodo',
-//                'value' => 'qiniu'
-//            ],
-//            [
-//                'label' => '阿里云OSS',
-//                'value' => 'aliyun'
-//            ],
-//            [
-//                'label' => '腾讯云COS',
-//                'value' => 'tencent'
-//            ],
-//            [
-//                'label' => '百度云BOS',
-//                'value' => 'baidu'
-//            ],
+            [
+                'label' => '七牛云Kodo',
+                'value' => 'qiniu'
+            ],
+            [
+                'label' => '阿里云OSS',
+                'value' => 'aliyun'
+            ],
+            [
+                'label' => '腾讯云COS',
+                'value' => 'tencent'
+            ],
+            [
+                'label' => '百度云BOS',
+                'value' => 'baidu'
+            ],
         ];
 
         return $storage;
